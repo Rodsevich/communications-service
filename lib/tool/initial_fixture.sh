@@ -1,4 +1,5 @@
 #!/bin/bash
+cd ../..
 dart pub get
 dart lib/tool/database_fixture.dart $1
 npx prisma db pull
