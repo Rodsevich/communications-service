@@ -1,15 +1,18 @@
 import 'dart:io';
 
+import 'package:dotenv/dotenv.dart';
 import 'package:postgres/postgres.dart';
 
 void main(List<String> args) async {
+  final env = DotEnv(includePlatformEnvironment: true)..load();
   try {
     final connection = await Connection.open(
       Endpoint(
-        host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
-        database: 'db-1.10.1',
-        username: 'postgresadmin',
-        password: '1Tzb7l18FSBEELjn',
+        host: env['DATABASE_HOST'] ?? 'localhost',
+        database: env['DATABASE_NAME'] ?? 'default',
+        username: env['DATABASE_USER'] ?? 'postgres',
+        password: env['DATABASE_PASSWORD'] ?? 'postgres',
+        port: int.parse(env['DATABASE_PORT'] ?? '5432'),
       ),
       settings: const ConnectionSettings(
         sslMode: SslMode.require,
