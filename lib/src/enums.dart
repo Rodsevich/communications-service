@@ -10,11 +10,12 @@ enum SmptVariant {
 
 /// This is the status of the email.
 enum EmailStatus {
-  /// This is for an email that has been sent.
-  sent,
 
   /// This is for an email that has not been sent.
   notSent,
+
+  /// This is for an email that has been sent.
+  sent,
 
   /// This is for an email that has been scheduled.
   queued,
@@ -22,4 +23,7 @@ enum EmailStatus {
   /// This is for an email that has not been sent successful and need to be
   /// forwarded.
   failed,
+
+  /// This value is for an email that has been read.
+  read,
 }

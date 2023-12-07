@@ -135,10 +135,10 @@ class NidusSmpt {
       if (emails.isNotEmpty) {
         log.finest('Fetched ${emails.length} emails from queue');
         for (final email in emails) {
-          if (email.sentAt != DateTime.now()) continue;
+          if (email.sentat != DateTime.now()) continue;
 
           await sendEmail(
-            to: email.email,
+            to: email.to,
             subject: email.subject,
             htmlBody: email.body,
           );
@@ -161,7 +161,7 @@ class NidusSmpt {
   }) async {
     try {
       await database.insertEmailToQueue(
-        emails: message.recipients as List<String>,
+        email: message.recipients.first.toString(),
         subject: message.subject ?? '',
         body: message.html ?? '',
         status: status,
@@ -175,14 +175,14 @@ class NidusSmpt {
 
   /// This method will mark an email as sent and added to the correct table
   /// on the database.
-  Future<void> _markEmailAsSent(Message email) async {
+  Future<void> _markEmailAsSent(Message message) async {
     try {
       await database.insertEmailSent(
-        emails: email.recipients as List<String>,
-        subject: email.subject ?? '',
-        body: email.html ?? '',
+        email: message.recipients.first.toString(),
+        subject: message.subject ?? '',
+        body: message.html ?? '',
       );
-      log.finer('Email sent to ${email.recipients}');
+      log.finer('Email sent to ${message.recipients.first}');
     } catch (e, st) {
       log.severe('We should handle', e, st);
       rethrow;

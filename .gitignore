@@ -5,3 +5,8 @@
 .packages
 build/
 pubspec.lock
+
+# generated files
+/lib/src/generated/*
+
+# .env

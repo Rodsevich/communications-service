@@ -12,10 +12,10 @@ _$EmailImpl _$$EmailImplFromJson(Map<String, dynamic> json) => _$EmailImpl(
       subject: json['subject'] as String,
       body: json['body'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      status: $enumDecode(_$EmailStatusEnumMap, json['status']),
       sentAt: json['sentAt'] == null
           ? null
           : DateTime.parse(json['sentAt'] as String),
-      status: $enumDecode(_$EmailStatusEnumMap, json['status']),
     );
 
 Map<String, dynamic> _$$EmailImplToJson(_$EmailImpl instance) =>
@@ -25,12 +25,14 @@ Map<String, dynamic> _$$EmailImplToJson(_$EmailImpl instance) =>
       'subject': instance.subject,
       'body': instance.body,
       'createdAt': instance.createdAt.toIso8601String(),
-      'sentAt': instance.sentAt?.toIso8601String(),
       'status': _$EmailStatusEnumMap[instance.status]!,
+      'sentAt': instance.sentAt?.toIso8601String(),
     };
 
 const _$EmailStatusEnumMap = {
-  EmailStatus.sent: 'sent',
   EmailStatus.notSent: 'notSent',
+  EmailStatus.sent: 'sent',
   EmailStatus.queued: 'queued',
+  EmailStatus.failed: 'failed',
+  EmailStatus.read: 'read',
 };

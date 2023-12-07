@@ -20,13 +20,26 @@ Email _$EmailFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Email {
+  /// The id of the email
   int get id => throw _privateConstructorUsedError;
+
+  /// The email address of the recipient
   String get email => throw _privateConstructorUsedError;
+
+  /// The subject of the email
   String get subject => throw _privateConstructorUsedError;
+
+  /// The body of the email, mostly a HTML string
   String get body => throw _privateConstructorUsedError;
+
+  /// The date and time the email was created
   DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime? get sentAt => throw _privateConstructorUsedError;
+
+  /// The status of the email
   EmailStatus get status => throw _privateConstructorUsedError;
+
+  /// The date and time the email was sent or scheduled
+  DateTime? get sentAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,8 +57,8 @@ abstract class $EmailCopyWith<$Res> {
       String subject,
       String body,
       DateTime createdAt,
-      DateTime? sentAt,
-      EmailStatus status});
+      EmailStatus status,
+      DateTime? sentAt});
 }
 
 /// @nodoc
@@ -66,8 +79,8 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
     Object? subject = null,
     Object? body = null,
     Object? createdAt = null,
-    Object? sentAt = freezed,
     Object? status = null,
+    Object? sentAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -90,14 +103,14 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      sentAt: freezed == sentAt
-          ? _value.sentAt
-          : sentAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as EmailStatus,
+      sentAt: freezed == sentAt
+          ? _value.sentAt
+          : sentAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -115,8 +128,8 @@ abstract class _$$EmailImplCopyWith<$Res> implements $EmailCopyWith<$Res> {
       String subject,
       String body,
       DateTime createdAt,
-      DateTime? sentAt,
-      EmailStatus status});
+      EmailStatus status,
+      DateTime? sentAt});
 }
 
 /// @nodoc
@@ -135,8 +148,8 @@ class __$$EmailImplCopyWithImpl<$Res>
     Object? subject = null,
     Object? body = null,
     Object? createdAt = null,
-    Object? sentAt = freezed,
     Object? status = null,
+    Object? sentAt = freezed,
   }) {
     return _then(_$EmailImpl(
       id: null == id
@@ -159,14 +172,14 @@ class __$$EmailImplCopyWithImpl<$Res>
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      sentAt: freezed == sentAt
-          ? _value.sentAt
-          : sentAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as EmailStatus,
+      sentAt: freezed == sentAt
+          ? _value.sentAt
+          : sentAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -180,31 +193,44 @@ class _$EmailImpl extends _Email {
       required this.subject,
       required this.body,
       required this.createdAt,
-      this.sentAt,
-      required this.status})
+      required this.status,
+      this.sentAt})
       : super._();
 
   factory _$EmailImpl.fromJson(Map<String, dynamic> json) =>
       _$$EmailImplFromJson(json);
 
+  /// The id of the email
   @override
   final int id;
+
+  /// The email address of the recipient
   @override
   final String email;
+
+  /// The subject of the email
   @override
   final String subject;
+
+  /// The body of the email, mostly a HTML string
   @override
   final String body;
+
+  /// The date and time the email was created
   @override
   final DateTime createdAt;
-  @override
-  final DateTime? sentAt;
+
+  /// The status of the email
   @override
   final EmailStatus status;
 
+  /// The date and time the email was sent or scheduled
+  @override
+  final DateTime? sentAt;
+
   @override
   String toString() {
-    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, sentAt: $sentAt, status: $status)';
+    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, status: $status, sentAt: $sentAt)';
   }
 
   @override
@@ -218,14 +244,14 @@ class _$EmailImpl extends _Email {
             (identical(other.body, body) || other.body == body) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            (identical(other.sentAt, sentAt) || other.sentAt == sentAt) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.sentAt, sentAt) || other.sentAt == sentAt));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, id, email, subject, body, createdAt, sentAt, status);
+      runtimeType, id, email, subject, body, createdAt, status, sentAt);
 
   @JsonKey(ignore: true)
   @override
@@ -248,26 +274,40 @@ abstract class _Email extends Email {
       required final String subject,
       required final String body,
       required final DateTime createdAt,
-      final DateTime? sentAt,
-      required final EmailStatus status}) = _$EmailImpl;
+      required final EmailStatus status,
+      final DateTime? sentAt}) = _$EmailImpl;
   const _Email._() : super._();
 
   factory _Email.fromJson(Map<String, dynamic> json) = _$EmailImpl.fromJson;
 
   @override
+
+  /// The id of the email
   int get id;
   @override
+
+  /// The email address of the recipient
   String get email;
   @override
+
+  /// The subject of the email
   String get subject;
   @override
+
+  /// The body of the email, mostly a HTML string
   String get body;
   @override
+
+  /// The date and time the email was created
   DateTime get createdAt;
   @override
-  DateTime? get sentAt;
-  @override
+
+  /// The status of the email
   EmailStatus get status;
+  @override
+
+  /// The date and time the email was sent or scheduled
+  DateTime? get sentAt;
   @override
   @JsonKey(ignore: true)
   _$$EmailImplCopyWith<_$EmailImpl> get copyWith =>

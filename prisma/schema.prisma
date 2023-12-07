@@ -1,0 +1,935 @@
+generator client {
+  provider = "dart run orm"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AccessTokens {
+  id    String @id
+  token String @unique
+}
+
+model AccessTokensHistory {
+  id          String   @id
+  token       String
+  userId      String
+  deviceToken String?
+  logDate     DateTime @default(now())
+  Users       Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model AdminRecoveryPasswords {
+  id            String   @id
+  email         String?  @unique
+  mobilePhone   String?  @unique
+  emailCode     String?
+  phoneCode     String?
+  emailVerified Boolean  @default(false)
+  phoneVerified Boolean  @default(false)
+  isVerified    Boolean  @default(false)
+  creationDate  DateTime @default(now())
+}
+
+model AdminRoles {
+  id          Int      @id @default(autoincrement())
+  name        String
+  roleColor   String
+  userAmount  Int      @default(0)
+  permissions String[]
+}
+
+model BankTransactions {
+  id                String            @id
+  userId            String
+  bankId            String
+  documentId        String
+  goalId            String
+  date              DateTime
+  amount            Float
+  status            Int
+  goalCode          String?           @default("Empty")
+  Banks             Banks             @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  DocumentsRegistry DocumentsRegistry @relation(fields: [documentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Goals             Goals             @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users             Users             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Banks {
+  id                    String             @id
+  name                  String             @unique
+  bankCode              String             @unique
+  status                Int                @default(0)
+  maxCharacter          Int
+  minCharacter          Int
+  alias                 String?
+  hasExternalPlatform   Boolean            @default(false)
+  allowsAccountCreation Boolean            @default(true)
+  allowsAutoDebit       Boolean            @default(false)
+  allowsCheckingAccount Boolean            @default(false)
+  allowsSavingsAccount  Boolean            @default(false)
+  allowsWithdrawals     Boolean            @default(true)
+  BankTransactions      BankTransactions[]
+  DebitAccounts         DebitAccounts[]
+}
+
+model CompanyRols {
+  id   String @id
+  name String
+}
+
+model Contributions {
+  id                     String         @id
+  amount                 Float
+  createdAt              DateTime       @default(now())
+  debitAccountId         String?
+  goalId                 String
+  movementStatus         Int            @default(0)
+  userId                 String
+  typeOfContribution     Int            @default(0)
+  source                 Int            @default(0)
+  contributionSource     String?
+  vehicleId              String?
+  productId              String?
+  vehicleGoalId          String?
+  userVehicleId          String?
+  scheduledExecutionDate DateTime?
+  vehicleComment         String?
+  transactionId          String
+  DebitAccounts          DebitAccounts? @relation(fields: [debitAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Goals                  Goals          @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                  Users          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Countries {
+  id                                                         String              @id
+  name                                                       String              @unique
+  CountryCurrencies                                          CountryCurrencies[]
+  Provinces                                                  Provinces[]
+  UserIncomeSources                                          UserIncomeSources[]
+  UserInfos_UserInfos_countryIdToCountries                   UserInfos[]         @relation("UserInfos_countryIdToCountries")
+  UserInfos_UserInfos_foundsCountryIdToCountries             UserInfos[]         @relation("UserInfos_foundsCountryIdToCountries")
+  UserInfos_UserInfos_passportExpeditionCountryIdToCountries UserInfos[]         @relation("UserInfos_passportExpeditionCountryIdToCountries")
+}
+
+model CountryCurrencies {
+  id         String     @id
+  currencyId String
+  countryId  String
+  Countries  Countries  @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Currencies Currencies @relation(fields: [currencyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Currencies {
+  id                String              @id
+  symbol            String
+  isoCode           String              @unique
+  CountryCurrencies CountryCurrencies[]
+  Products          Products[]
+}
+
+model DebitAccounts {
+  id                                           String          @id
+  accountNumber                                String          @unique
+  bankId                                       String
+  userId                                       String
+  accountName                                  String
+  lastFourDigits                               String
+  accountTypeId                                Int             @default(0)
+  accountStatusId                              Int             @default(0)
+  isMainBankAccount                            Boolean         @default(false)
+  closeAccountReason                           String?
+  Contributions                                Contributions[]
+  Banks                                        Banks           @relation(fields: [bankId], references: [id])
+  Users_DebitAccounts_userIdToUsers            Users           @relation("DebitAccounts_userIdToUsers", fields: [userId], references: [id])
+  Goals                                        Goals[]
+  Users_Users_mainBankAccountIdToDebitAccounts Users?          @relation("Users_mainBankAccountIdToDebitAccounts")
+  Withdrawals                                  Withdrawals[]
+}
+
+model DisabledUsers {
+  id                    String    @id
+  createdAt             DateTime  @default(now())
+  userName              String
+  suspensionReason      Int
+  isPermanentSuspension Boolean   @default(true)
+  willDisableAt         DateTime?
+  additionalComment     String?
+  userId                String    @unique
+  Users                 Users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model DocumentsRegistry {
+  id                String             @id
+  userId            String
+  userName          String
+  documentRequest   String
+  date              DateTime
+  documentationLink String
+  requestId         String?
+  BankTransactions  BankTransactions[]
+  DocumentsRequests DocumentsRequests? @relation(fields: [requestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model DocumentsRequests {
+  id                String              @id
+  userId            String
+  userName          String
+  nationalIdCard    String
+  sentDate          DateTime
+  requestType       String
+  suspended         Boolean
+  expiredDate       DateTime?
+  status            Boolean
+  lastUpdate        DateTime
+  answerDate        DateTime?
+  suspensionStatus  Int?                @default(0)
+  alreadyReceived   Boolean             @default(false)
+  documentType      Int
+  kycLabel          Int?
+  adminComment      String?
+  DocumentsRegistry DocumentsRegistry[]
+}
+
+model EconomicActivities {
+  id   String @id
+  name String
+}
+
+model EmailChange {
+  id           String   @id
+  oldemail     String
+  newemail     String
+  creationDate DateTime @default(now())
+  modifiedDate DateTime @default(now())
+}
+
+model EmergencyContacts {
+  id               String     @id
+  name             String
+  mobilePhone      String
+  email            String
+  deleted          Boolean    @default(false)
+  userRelationship String
+  userInfoId       String?
+  lastName         String
+  UserInfos        UserInfos? @relation(fields: [userInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ExternalPlatforms {
+  id         String   @id
+  name       String?
+  image      String?
+  firstStep  String?
+  secondStep String?
+  thirdStep  String?
+  fourthStep String?
+  createdAt  DateTime @default(now())
+}
+
+model FamilyMembers {
+  id               String    @id
+  name             String
+  birthDate        DateTime
+  gender           String
+  userRelationship String
+  email            String?
+  mobilePhone      String?
+  userInfoId       String
+  UserInfos        UserInfos @relation(fields: [userInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Faqs {
+  id        String   @id
+  question  String
+  answer    String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model FutureContributions {
+  id                    String   @id
+  amount                Float
+  creationDate          DateTime @default(now())
+  goalId                String
+  userId                String
+  type                  String   @default("regular")
+  source                Int      @default(0)
+  contributionSource    String?
+  debitAccountNumber    String?
+  executionDate         DateTime
+  modifiedExecutionDate DateTime
+  modifiedScheduledDate DateTime
+  nationalIdNumber      String
+  scheduledDate         DateTime
+  vehicleGoalId         String?
+  saveUpFromLastMonth   Float?   @default(0)
+  vehicleId             String?
+  Goals                 Goals    @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                 Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model FutureTransactions {
+  id                             String   @id
+  userId                         String
+  goalId                         String
+  vehicleGoalId                  String
+  transactionTypeId              Int
+  source                         Int
+  contributionSource             String
+  amount                         Float
+  executionDate                  DateTime
+  scheduledexecutiondate         DateTime
+  modifiedexecutiondate          DateTime
+  modifiedScheduledExecutionDate DateTime
+  nationalIdNumber               String
+  vehicleId                      String?
+  creationDate                   DateTime @default(now())
+  Goals                          Goals    @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                          Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model FutureWithdrawals {
+  id                    String    @id
+  amount                Float
+  creationDate          DateTime  @default(now())
+  goalId                String
+  userId                String
+  type                  String    @default("regular")
+  destinationAccountId  String?
+  frequency             String?
+  remainingDues         Int?
+  nationalIdNumber      String
+  vehicleGoalId         String
+  debitAccountNumber    String
+  executionDate         DateTime?
+  modifiedExecutionDate DateTime?
+  modifiedscheduledDate DateTime
+  scheduledDate         DateTime
+  secondScheduledDate   DateTime?
+  vehicleId             String?
+  Goals                 Goals     @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                 Users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model GlobalConfigurations {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  type      Int
+  value     String
+}
+
+model GlobalNotifications {
+  id                    String                  @id
+  title                 String
+  message               String
+  status                Int                     @default(0)
+  notificationType      Int
+  sendWay               Int
+  sendDayTime           Int
+  sendHourTime          Int
+  creationDate          DateTime                @default(now())
+  notificationFrequency Int
+  description           String?
+  notificationValue     Int                     @unique
+  updatedAt             DateTime?
+  lastSendDate          Int?
+  LogNotifications      LogNotifications[]
+  MustacheValuesExample MustacheValuesExample[]
+}
+
+model Goals {
+  id                                                          String                 @id
+  userId                                                      String
+  goalName                                                    String
+  imageUrl                                                    String?
+  originalAmount                                              Float
+  currentAmount                                               Float
+  savedUpAmount                                               Float                  @default(0)
+  totalAlcanzaContribution                                    Float                  @default(0)
+  totalAlcanzaAndUserContribution                             Float                  @default(0)
+  originalEndsDate                                            DateTime
+  currentEndDate                                              DateTime
+  firstContributionDate                                       DateTime
+  secondContributionDate                                      DateTime?
+  dateDifference                                              Int
+  contributionFrequency                                       Int
+  purpose                                                     String
+  mainGoal                                                    Boolean                @default(false)
+  isGoalCreatedInVehicle                                      Boolean?
+  debitAccountId                                              String?
+  goalStatusId                                                Int                    @default(0)
+  contributionSource                                          Int?
+  creationDate                                                DateTime               @default(now())
+  fixedPaymentAmount                                          Float                  @default(0)
+  lastPercentageNotificationSend                              Int                    @default(0)
+  productId                                                   String?
+  vehicleId                                                   String?
+  vehicleGoalId                                               String?                @unique
+  userVehicleId                                               String?                @unique
+  BankTransactions                                            BankTransactions[]
+  Contributions                                               Contributions[]
+  FutureContributions                                         FutureContributions[]
+  FutureTransactions                                          FutureTransactions[]
+  FutureWithdrawals                                           FutureWithdrawals[]
+  DebitAccounts                                               DebitAccounts?         @relation(fields: [debitAccountId], references: [id])
+  Products                                                    Products?              @relation(fields: [productId], references: [id])
+  Users                                                       Users                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  MovementBetweenGoals_MovementBetweenGoals_fromGoalIdToGoals MovementBetweenGoals[] @relation("MovementBetweenGoals_fromGoalIdToGoals")
+  MovementBetweenGoals_MovementBetweenGoals_toGoalIdToGoals   MovementBetweenGoals[] @relation("MovementBetweenGoals_toGoalIdToGoals")
+  Withdrawals                                                 Withdrawals[]
+}
+
+model GoalsChartData {
+  id                 String   @id
+  instanceDate       DateTime
+  purpose            Int
+  totalActiveGoals   Int
+  totalInactiveGoals Int
+  totalCompleteGoals Int
+  totalDeletedGoals  Int
+}
+
+model Hobbies {
+  id   String @id
+  name String
+  icon String
+}
+
+model LogAdmins {
+  id           String   @id
+  userAdminId  String
+  action       String
+  email        String
+  createdAt    DateTime @default(now())
+  affectedUser String?
+}
+
+model LogNews {
+  id        String    @id
+  createdAt DateTime  @default(now())
+  name      String
+  message   String
+  urlLink   String
+  urlImage  String
+  newsId    String
+  userId    String
+  readAt    DateTime?
+  News      News      @relation(fields: [newsId], references: [id], onDelete: Cascade)
+}
+
+model LogNotifications {
+  id                   String              @id
+  sentAt               DateTime
+  createdAt            DateTime            @default(now())
+  notificationBodySent String
+  notificationId       String
+  userId               String
+  title                String
+  readAt               DateTime?
+  extraData            String?
+  notificationValue    Int
+  notificationSendWay  Int?
+  GlobalNotifications  GlobalNotifications @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+}
+
+model MovementBetweenGoals {
+  id                                           String    @id
+  createdAt                                    DateTime  @default(now())
+  userId                                       String
+  fromGoalId                                   String
+  toGoalId                                     String
+  fromGoalName                                 String
+  toGoalName                                   String
+  status                                       Int
+  amount                                       Float
+  originVehicleGoalId                          String
+  destinyVehicleGoalId                         String
+  userVehicleId                                String
+  scheduledExecutionDate                       DateTime?
+  productId                                    String?
+  vehicleId                                    String?
+  vehicleComment                               String?
+  transactionId                                String
+  Goals_MovementBetweenGoals_fromGoalIdToGoals Goals     @relation("MovementBetweenGoals_fromGoalIdToGoals", fields: [fromGoalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Goals_MovementBetweenGoals_toGoalIdToGoals   Goals     @relation("MovementBetweenGoals_toGoalIdToGoals", fields: [toGoalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                                        Users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model MovementsChartData {
+  id                       String   @id
+  instanceDate             DateTime
+  totalContributions       Int
+  totalWithdrawals         Int
+  totalAmountContributions Float
+  totalAmountWithdrawals   Float
+}
+
+model MustacheValuesExample {
+  id                  String              @id
+  key                 String
+  value               String
+  notificationId      String
+  GlobalNotifications GlobalNotifications @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+}
+
+model News {
+  id            String    @id
+  name          String
+  message       String
+  urlImage      String
+  showAt        DateTime?
+  hideAt        DateTime?
+  urlLink       String
+  count         Int       @default(0)
+  status        Int       @default(0)
+  mustDisappear Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  LogNews       LogNews[]
+}
+
+model NoActivityGoalsRegistry {
+  id         String   @id
+  goalId     String
+  goalName   String
+  targetDate DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
+}
+
+model NotificationUsersConfigs {
+  id               String   @id
+  userId           String
+  notificationType Int
+  allowPush        Boolean  @default(true)
+  allowEmail       Boolean  @default(true)
+  creationDate     DateTime @default(now())
+  updatedDate      DateTime @default(now())
+  Users            Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Notifications {
+  id                 String   @id
+  userId             String
+  notificationImgUrl String
+  notificationType   Int
+  sendWay            Int
+  notificationStep   Int?     @default(0)
+  createdAt          DateTime @default(now())
+  sentTime           Int?     @default(0)
+  message            String?
+  Users              Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Products {
+  id          String     @id
+  createdAt   DateTime   @default(now())
+  productName String
+  vehicleId   String
+  currencyId  String
+  Goals       Goals[]
+  Currencies  Currencies @relation(fields: [currencyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Vehicles    Vehicles   @relation(fields: [vehicleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Professions {
+  id        String      @id
+  name      String
+  UserInfos UserInfos[]
+}
+
+model Provinces {
+  id                String              @id
+  name              String              @unique
+  countryId         String
+  Countries         Countries           @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserIncomeSources UserIncomeSources[]
+  UserInfos         UserInfos[]
+}
+
+model ReasonForClosingAccount {
+  id                String  @id
+  reason            String?
+  userId            String
+  email             String
+  nationalIdNumber  String
+  mobilePhoneNumber String
+}
+
+model RecoveryPasswords {
+  id            String   @id
+  email         String?  @unique
+  mobilePhone   String?
+  emailCode     String?
+  phoneCode     String?
+  emailVerified Boolean  @default(false)
+  phoneVerified Boolean  @default(false)
+  isVerified    Boolean  @default(false)
+  creationDate  DateTime @default(now())
+  modifiedDate  DateTime @default(now())
+  userId        String   @unique
+  Users         Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model RecoveryPasswordsAdmins {
+  id            String     @id
+  email         String?    @unique
+  mobilePhone   String?
+  emailCode     String?
+  phoneCode     String?
+  emailVerified Boolean    @default(false)
+  phoneVerified Boolean    @default(false)
+  isVerified    Boolean    @default(false)
+  creationDate  DateTime   @default(now())
+  modifiedDate  DateTime   @default(now())
+  adminUserId   String     @unique
+  UserAdmins    UserAdmins @relation(fields: [adminUserId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model RefreshAccessTokens {
+  id    String @id
+  token String @unique
+}
+
+model SocialMedia {
+  id                    String    @id
+  socialMediaPlatformId Int
+  handle                String
+  userInfoid            String
+  UserInfos             UserInfos @relation(fields: [userInfoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Sports {
+  id   String @id
+  name String @unique
+  icon String
+}
+
+model Transactions {
+  id                     String    @id
+  transactionType        Int
+  originAccountType      Int
+  originAccountId        String
+  destinationAccountType Int
+  destinationAccountId   String
+  executionDate          DateTime?
+  amount                 Float
+  status                 Int
+  description            String?
+  rejectionComment       String?
+  balance                Float?
+  vehicleUserId          String
+  creationDate           DateTime  @default(now())
+}
+
+model UserAdminTokens {
+  id        String   @id
+  token     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model UserAdmins {
+  id                      String                   @id
+  name                    String
+  email                   String                   @unique
+  password                String?
+  nationIdNumber          String                   @unique
+  mobilePhoneNumber       String                   @unique
+  token                   String?                  @unique
+  role                    Int
+  RecoveryPasswordsAdmins RecoveryPasswordsAdmins?
+}
+
+model UserFinancialProfiles {
+  id                                         String    @id
+  estimatedMonthlyIncome                     Float?
+  totalAssets                                Float?
+  estimatedLiquidAssets                      Float?
+  activeLiquidAssetsPercentageOnBankAccounts String?
+  totalEstimatedLiabilities                  Float?
+  userInfoid                                 String    @unique
+  UserInfos                                  UserInfos @relation(fields: [userInfoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model UserHobbies {
+  id        String    @id
+  hobbyId   String
+  userInfo  String
+  UserInfos UserInfos @relation(fields: [userInfo], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model UserIncomeSources {
+  id                            String     @id
+  proofOfIncomeType             String?
+  proofOfIncome                 String?
+  companyName                   String?
+  companyRole                   String?
+  companyStartDate              DateTime?
+  companyOccupation             String?
+  companyPhone                  String?
+  provinceId                    String?
+  authorizedCapital             Float?
+  amountOfEmployees             Int?
+  timeInYearSasShareHolder      Int?
+  lastYearGrossIncome           Float?
+  hasRealEstateInvestments      Boolean?
+  realEstateInvestments         String?
+  hasStockMarketInvestments     Boolean?
+  stockMarketInvestments        String?
+  hasPrivateInvestments         Boolean?
+  privateInvestments            String?
+  hasPropertyOrBusinessListings Boolean?
+  propertyOrBusinessListings    String?
+  userInfoid                    String     @unique
+  anotherIncomeSource           String?
+  stockPercentage               Int?
+  businessActivity              String?
+  businessAddress               String?
+  businessName                  String?
+  countryId                     String?
+  Countries                     Countries? @relation(fields: [countryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Provinces                     Provinces? @relation(fields: [provinceId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserInfos                     UserInfos  @relation(fields: [userInfoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model UserInfos {
+  id                                                         String                 @id
+  userId                                                     String                 @unique
+  isPep                                                      Boolean?
+  pepRole                                                    String?
+  pepCompany                                                 String?
+  politicallyLinkage                                         String?
+  isUsResidentOrCitizen                                      Boolean?
+  usContactAddress                                           String?
+  sNN                                                        String?
+  passportNumber                                             String?
+  passportExpeditionCountryId                                String?
+  passportExpeditionDate                                     DateTime?
+  companyStartDate                                           DateTime?
+  streetAddress                                              String?
+  sectorAddress                                              String?
+  numberAddress                                              String?
+  apartmentAddress                                           String?
+  building                                                   String?
+  civilStatus                                                String?
+  occupation                                                 String?
+  academicLevel                                              String?
+  familyPoliticalExposed                                     Boolean?
+  familyPoliticallyLinkage                                   String?
+  familyPoliticallyJob                                       String?
+  familyPoliticallyWhere                                     String?
+  userType                                                   String?
+  isApprovedByVehicle                                        Boolean                @default(false)
+  professionId                                               String?
+  hasActiveSocialMedia                                       Boolean                @default(false)
+  hasActiveFamily                                            Boolean                @default(false)
+  hasActiveEmergencyContact                                  Boolean                @default(false)
+  provinceId                                                 String?
+  userKycDoc                                                 String?
+  hasActiveHobbies                                           Boolean                @default(false)
+  hasActiveSports                                            Boolean                @default(false)
+  realState                                                  String?
+  realStateReceivedTime                                      DateTime?
+  realStateAmount                                            Float?
+  realStateFoundOrigin                                       String?
+  foundsCountryId                                            String?
+  countryId                                                  String?
+  EmergencyContacts                                          EmergencyContacts[]
+  FamilyMembers                                              FamilyMembers[]
+  SocialMedia                                                SocialMedia[]
+  UserFinancialProfiles                                      UserFinancialProfiles?
+  UserHobbies                                                UserHobbies[]
+  UserIncomeSources                                          UserIncomeSources?
+  Countries_UserInfos_countryIdToCountries                   Countries?             @relation("UserInfos_countryIdToCountries", fields: [countryId], references: [id])
+  Countries_UserInfos_foundsCountryIdToCountries             Countries?             @relation("UserInfos_foundsCountryIdToCountries", fields: [foundsCountryId], references: [id])
+  Countries_UserInfos_passportExpeditionCountryIdToCountries Countries?             @relation("UserInfos_passportExpeditionCountryIdToCountries", fields: [passportExpeditionCountryId], references: [id])
+  Professions                                                Professions?           @relation(fields: [professionId], references: [id])
+  Provinces                                                  Provinces?             @relation(fields: [provinceId], references: [id])
+  Users                                                      Users                  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserInvestorProfiles                                       UserInvestorProfiles?
+  UserSports                                                 UserSports[]
+}
+
+model UserInvestorProfiles {
+  id                                     String    @id
+  userInfoId                             String    @unique
+  linkedToAlcanzaOrBhd                   Boolean?
+  investingExperience                    String?
+  investmentGoal                         String?
+  knownOperationsBank                    Boolean   @default(false)
+  firstProductTypeBank                   String?
+  secondProductTypeBank                  String?
+  operationsPerYearBank                  String?
+  experienceInYearsBank                  String?
+  knownOperationsInvestmentFunds         Boolean   @default(false)
+  firstProductTypeInvestmentFunds        String?
+  secondProductTypeInvestmentFunds       String?
+  operationsPerYearInvestmentFunds       String?
+  experienceInYearsInvestmentFunds       String?
+  knownOperationsStockExchange           Boolean   @default(false)
+  firstProductTypeStockExchange          String?
+  secondProductTypeStockExchange         String?
+  operationsPerYearStockExchange         String?
+  experienceInYearsStockExchange         String?
+  unfavorableChangeProfitabilityResponse Int
+  estimatedGoalCompletionTime            String?
+  invesmentGrowthExpectation             String?
+  UserInfos                              UserInfos @relation(fields: [userInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model UserSports {
+  id         String    @id
+  name       String
+  userInfoid String
+  sportId    String
+  UserInfos  UserInfos @relation(fields: [userInfoid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model UserVerifications {
+  id                     String    @id
+  email                  String    @unique
+  emailCode              String?
+  emailVerified          Boolean   @default(false)
+  mobilePhone            String?   @unique
+  mobilePhoneCode        String?
+  phoneVerified          Boolean   @default(false)
+  metamapsverificationid String?   @unique
+  creationDate           DateTime  @default(now())
+  updateOn               DateTime  @default(now())
+  name                   String?
+  birthDate              DateTime?
+  termsVerified          Boolean   @default(false)
+  lastname               String?
+  fullName               String?
+  location               String?
+  deviceVendor           String?
+  deviceModel            String?
+  gender                 String?
+  matiVerificationId     String?
+  matiStatus             Int       @default(3)
+}
+
+model Users {
+  id                                                   String                     @id
+  email                                                String                     @unique
+  name                                                 String?
+  nationalIdNumber                                     String                     @unique
+  mobilePhoneNumber                                    String                     @unique
+  password                                             String
+  deviceToken                                          String?
+  lastActivity                                         DateTime                   @default(now())
+  mainBankAccountId                                    String?                    @unique
+  profileImg                                           String?
+  birthDate                                            DateTime
+  userType                                             String?
+  phoneOtp                                             String?
+  phoneVerified                                        Boolean?
+  emailVerified                                        Boolean?
+  emailOtp                                             String?
+  deleted                                              Boolean                    @default(false)
+  mainPurpose                                          String?
+  kycStatus                                            Int                        @default(0)
+  userStatus                                           Int                        @default(1)
+  userInfosynchedToVehicle                             Boolean
+  vehicleUserId                                        String?                    @unique
+  creationDate                                         DateTime                   @default(now())
+  modifiedDate                                         DateTime                   @default(now())
+  lastName                                             String?
+  fullName                                             String?
+  isRemenderKyc                                        Boolean                    @default(false)
+  invalidAttempts                                      Int                        @default(0)
+  finishKycAt                                          DateTime?
+  gender                                               String?
+  vehicleId                                            String?
+  reasonForClosingAccountId                            String?
+  AccessTokensHistory                                  AccessTokensHistory[]
+  BankTransactions                                     BankTransactions[]
+  Contributions                                        Contributions[]
+  DebitAccounts_DebitAccounts_userIdToUsers            DebitAccounts[]            @relation("DebitAccounts_userIdToUsers")
+  DisabledUsers                                        DisabledUsers?
+  FutureContributions                                  FutureContributions[]
+  FutureTransactions                                   FutureTransactions[]
+  FutureWithdrawals                                    FutureWithdrawals[]
+  Goals                                                Goals[]
+  MovementBetweenGoals                                 MovementBetweenGoals[]
+  NotificationUsersConfigs                             NotificationUsersConfigs[]
+  Notifications                                        Notifications[]
+  RecoveryPasswords                                    RecoveryPasswords?
+  UserInfos                                            UserInfos?
+  DebitAccounts_Users_mainBankAccountIdToDebitAccounts DebitAccounts?             @relation("Users_mainBankAccountIdToDebitAccounts", fields: [mainBankAccountId], references: [id])
+  UsersIpAddresses                                     UsersIpAddresses[]
+  Withdrawals                                          Withdrawals[]
+}
+
+model UsersChartData {
+  id                  String   @id
+  instanceDate        DateTime
+  totalPendingUsers   Int
+  totalInactiveUsers  Int
+  totalActiveUsers    Int
+  totalSuspendedUsers Int
+}
+
+model UsersIpAddresses {
+  id           String   @id
+  ip           String
+  deviceVendor String
+  deviceModel  String
+  location     String
+  creationDate DateTime @default(now())
+  approved     Boolean  @default(false)
+  userId       String
+  Users        Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Vehicles {
+  id        String     @id
+  name      String
+  createdAt DateTime   @default(now())
+  Products  Products[]
+}
+
+model Withdrawals {
+  id                     String         @id
+  amount                 Float
+  executionDate          DateTime?
+  scheduledExecutionDate DateTime?
+  creationDate           DateTime       @default(now())
+  goalId                 String
+  vehicleComment         String?
+  userId                 String
+  debitAccountId         String?
+  withdrawalStatusId     Int            @default(0)
+  vehicleId              String?
+  productId              String?
+  vehicleGoalId          String?
+  userVehicleId          String?
+  transactionId          String
+  DebitAccounts          DebitAccounts? @relation(fields: [debitAccountId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Goals                  Goals          @relation(fields: [goalId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Users                  Users          @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model emailqueue {
+  id        Int       @id @default(autoincrement())
+  createdat DateTime  @default(now()) @db.Timestamp(6)
+  sentat    DateTime? @db.Timestamp(6)
+  to        String    @db.VarChar(255)
+  subject   String    @db.VarChar(255)
+  body      String
+  status    Int       @default(0)
+}
+
+model emailsent {
+  id        Int      @id @default(autoincrement())
+  createdat DateTime @default(now()) @db.Timestamp(6)
+  sentat    DateTime @default(now()) @db.Timestamp(6)
+  to        String   @db.VarChar(255)
+  subject   String   @db.VarChar(255)
+  body      String
+  status    Int      @default(0)
+}
