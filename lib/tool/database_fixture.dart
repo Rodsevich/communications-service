@@ -19,29 +19,6 @@ void main(List<String> args) async {
       ),
     );
 
-    await connection.execute('''
-   CREATE TABLE IF NOT EXISTS ${args[0]}.EmailQueue (
-  id SERIAL PRIMARY KEY,
-  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  sentAt TIMESTAMP,
-  "to" VARCHAR(255) NOT NULL,
-  subject VARCHAR(255) NOT NULL,
-  body TEXT NOT NULL,
-  status INT NOT NULL DEFAULT 0
-);
-''');
-
-    await connection.execute('''
-   CREATE TABLE IF NOT EXISTS ${args[0]}.EmailSent (
-  id SERIAL PRIMARY KEY,
-  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  sentAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "to" VARCHAR(255) NOT NULL,
-  subject VARCHAR(255) NOT NULL,
-  body TEXT NOT NULL,
-  status INT NOT NULL DEFAULT 0
-);
-  ''');
 
     await connection.close();
 

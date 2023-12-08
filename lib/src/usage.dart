@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:logging/logging.dart';
 import 'package:nidus_smpt/nidus_smpt.dart';
 import 'package:nidus_smpt/src/db/db.dart';
-import 'package:nidus_smpt/src/generated/prisma/prisma_client.dart';
 
 void main() async {
   String message;
@@ -44,13 +45,22 @@ void main() async {
     },
   );
 
-  Database(PrismaClient());
+  final dbConn = await Database.initialConnection(
+    host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
+    databaseName: 'db-1.10.1',
+    userName: 'postgresadmin',
+    password: '1Tzb7l18FSBEELjn',
+    port: 5432,
+  );
+
+  await Database(dbConn).initialFixture('public');
 
   final smpt = NidusSmpt(
     email: 'noreply@alcanza.com.do',
     password: 'AccesoNuevo**2023',
     displayName: 'Alcanza',
     variant: SmptVariant.outlook,
+    database: Database(dbConn),
   );
 
   await smpt.sendEmail(
@@ -58,24 +68,6 @@ void main() async {
     subject: 'testing smpt',
     htmlBody: 'Esta wea es un body',
   );
+
+  exit(0);
 }
-
-// model EmailQueue {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   sentAt    DateTime?
-//   to        String
-//   subject   String
-//   body      String
-//   status    Int     @default(0)
-// }
-
-// model EmailSent {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   sentAt    DateTime @default(now())
-//   to        String
-//   subject   String
-//   body      String
-//   status    Int     @default(0)
-// }
