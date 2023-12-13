@@ -47,7 +47,7 @@ class Database {
       "to" VARCHAR(255) NOT NULL,
       subject VARCHAR(255) NOT NULL,
       body TEXT NOT NULL,
-      status INT NOT NULL DEFAULT 0
+      status INT NOT NULL DEFAULT 0,
     );
   ''');
 
@@ -59,7 +59,8 @@ class Database {
       "to" VARCHAR(255) NOT NULL,
       subject VARCHAR(255) NOT NULL,
       body TEXT NOT NULL,
-      status INT NOT NULL DEFAULT 0
+      status INT NOT NULL DEFAULT 0,
+      followUpAt TIMESTAMP,
     );
   ''');
   }
@@ -95,17 +96,19 @@ class Database {
     required String email,
     required String subject,
     required String body,
+    int? followUpDays,
   }) async {
     try {
       await connection.execute(
         Sql.named(
-            'INSERT INTO emailsent ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)'),
+            'INSERT INTO emailsent ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status, @followup)'),
         parameters: {
           'to': email,
           'subject': subject,
           'body': body,
           'sentat': DateTime.now(),
           'status': EmailStatus.sent.index,
+          'followup': DateTime.now().add(Duration(days: followUpDays!)),
         },
       );
     } catch (e) {
@@ -169,6 +172,76 @@ class Database {
           'id': id,
         },
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// This will fetch a list of emails in a date range.
+  Future<List<Email>> fetchEmailsInDateRange(DateTime datetime) async {
+    try {
+      final query = await connection.execute(
+        Sql.named(
+          '''
+              SELECT * FROM emailsent 
+              WHERE sentat <= @datetime 
+              AND status != @readStatus
+              ''',
+        ),
+        parameters: {
+          'datetime': datetime,
+          'readStatus': EmailStatus.read.index,
+        },
+      );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime? ?? DateTime.now(),
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+          );
+        },
+      ).toList();
+
+      return results;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// This will fetch a list of emails with followUp value
+  Future<List<Email>> fetchEmailsWithFollowUp() async {
+    try {
+      final query = await connection.execute(
+        Sql.named(
+          '''
+              SELECT * FROM emailsent 
+                WHERE followupat IS NOT NULL
+              ''',
+        ),
+      );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime? ?? DateTime.now(),
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+            followUpAt: row[7] as DateTime? ?? DateTime.now(),
+          );
+        },
+      ).toList();
+
+      return results;
     } catch (e) {
       rethrow;
     }

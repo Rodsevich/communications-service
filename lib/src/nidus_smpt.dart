@@ -77,6 +77,7 @@ class NidusSmpt {
     required String subject,
     required String htmlBody,
     DateTime? sentAt,
+    int? followUpDays,
     List<Attachment>? attachments,
   }) async {
     log.info('Sending email to $to');
@@ -105,7 +106,7 @@ class NidusSmpt {
         maxAttempts: 8,
       );
 
-      await _markEmailAsSent(message);
+      await _markEmailAsSent(message: message, followUpDays: followUpDays);
 
       log.fine('Email sent successfully to $to');
     } on Exception catch (e, st) {
@@ -176,12 +177,16 @@ class NidusSmpt {
 
   /// This method will mark an email as sent and added to the correct table
   /// on the database.
-  Future<void> _markEmailAsSent(Message message) async {
+  Future<void> _markEmailAsSent({
+    required Message message,
+    int? followUpDays,
+  }) async {
     try {
       await database.insertEmailSent(
         email: message.recipients.first.toString(),
         subject: message.subject ?? '',
         body: message.html ?? '',
+        followUpDays: followUpDays,
       );
       log.finer('Email sent to ${message.recipients.first}');
     } catch (e, st) {
@@ -195,6 +200,43 @@ class NidusSmpt {
     try {
       await database.deleteEmailsInQueue(id);
       log.finer('Email with id: $id, deleted from queue');
+      return;
+    } catch (e, st) {
+      log.severe('We should handle', e, st);
+      rethrow;
+    }
+  }
+
+  /// This method will fetch all emails is a range.
+  Future<List<Email>> fetchEmailsInDateRange(DateTime date) async {
+    try {
+      final emails = await database.fetchEmailsInDateRange(date);
+      return emails;
+    } catch (e, st) {
+      log.severe('We should handle', e, st);
+      rethrow;
+    }
+  }
+
+  ///
+  Future<void> sendEmailsWithFollowUp() async {
+    try {
+      final emails = await database.fetchEmailsWithFollowUp();
+
+      if (emails.isNotEmpty) {
+        log.finest('Fetched ${emails.length} emails with follow up');
+        for (final email in emails) {
+          if (email.followUpAt!.isAfter(DateTime.now())) continue;
+
+          await sendEmail(
+            to: email.email,
+            subject: email.subject,
+            htmlBody: email.body,
+          );
+          await _deleteEmailInQueue(email.id);
+        }
+      }
+
       return;
     } catch (e, st) {
       log.severe('We should handle', e, st);

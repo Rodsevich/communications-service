@@ -32,6 +32,10 @@ class Email with _$Email {
 
     /// The date and time the email was sent or scheduled
     DateTime? sentAt,
+
+    /// This is the value for follow up emails, it will be the days to wait
+    /// to send the email
+    DateTime? followUpAt,
   }) = _Email;
 
   /// {@macro fromJson}

@@ -63,11 +63,14 @@ void main() async {
     database: Database(dbConn),
   );
 
-  await smpt.sendEmail(
-    to: 'ficettiesteban@gmail.com',
-    subject: 'testing smpt',
-    htmlBody: 'Esta wea es un body',
-  );
+  // await smpt.sendEmail(
+  //   to: 'ficettiesteban@gmail.com',
+  //   subject: 'testing smpt',
+  //   htmlBody: 'Esta wea es un body',
+  // );
+
+  await smpt.fetchEmailsInDateRange(DateTime.now());
+
 
   exit(0);
 }

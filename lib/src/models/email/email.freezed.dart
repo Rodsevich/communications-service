@@ -41,6 +41,10 @@ mixin _$Email {
   /// The date and time the email was sent or scheduled
   DateTime? get sentAt => throw _privateConstructorUsedError;
 
+  /// This is the value for follow up emails, it will be the days to wait
+  /// to send the email
+  DateTime? get followUpAt => throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $EmailCopyWith<Email> get copyWith => throw _privateConstructorUsedError;
@@ -58,7 +62,8 @@ abstract class $EmailCopyWith<$Res> {
       String body,
       DateTime createdAt,
       EmailStatus status,
-      DateTime? sentAt});
+      DateTime? sentAt,
+      DateTime? followUpAt});
 }
 
 /// @nodoc
@@ -81,6 +86,7 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
     Object? createdAt = null,
     Object? status = null,
     Object? sentAt = freezed,
+    Object? followUpAt = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -111,6 +117,10 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
           ? _value.sentAt
           : sentAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      followUpAt: freezed == followUpAt
+          ? _value.followUpAt
+          : followUpAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -129,7 +139,8 @@ abstract class _$$EmailImplCopyWith<$Res> implements $EmailCopyWith<$Res> {
       String body,
       DateTime createdAt,
       EmailStatus status,
-      DateTime? sentAt});
+      DateTime? sentAt,
+      DateTime? followUpAt});
 }
 
 /// @nodoc
@@ -150,6 +161,7 @@ class __$$EmailImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? status = null,
     Object? sentAt = freezed,
+    Object? followUpAt = freezed,
   }) {
     return _then(_$EmailImpl(
       id: null == id
@@ -180,6 +192,10 @@ class __$$EmailImplCopyWithImpl<$Res>
           ? _value.sentAt
           : sentAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      followUpAt: freezed == followUpAt
+          ? _value.followUpAt
+          : followUpAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -194,7 +210,8 @@ class _$EmailImpl extends _Email {
       required this.body,
       required this.createdAt,
       required this.status,
-      this.sentAt})
+      this.sentAt,
+      this.followUpAt})
       : super._();
 
   factory _$EmailImpl.fromJson(Map<String, dynamic> json) =>
@@ -228,9 +245,14 @@ class _$EmailImpl extends _Email {
   @override
   final DateTime? sentAt;
 
+  /// This is the value for follow up emails, it will be the days to wait
+  /// to send the email
+  @override
+  final DateTime? followUpAt;
+
   @override
   String toString() {
-    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, status: $status, sentAt: $sentAt)';
+    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, status: $status, sentAt: $sentAt, followUpAt: $followUpAt)';
   }
 
   @override
@@ -245,13 +267,15 @@ class _$EmailImpl extends _Email {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.sentAt, sentAt) || other.sentAt == sentAt));
+            (identical(other.sentAt, sentAt) || other.sentAt == sentAt) &&
+            (identical(other.followUpAt, followUpAt) ||
+                other.followUpAt == followUpAt));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, email, subject, body, createdAt, status, sentAt);
+  int get hashCode => Object.hash(runtimeType, id, email, subject, body,
+      createdAt, status, sentAt, followUpAt);
 
   @JsonKey(ignore: true)
   @override
@@ -275,7 +299,8 @@ abstract class _Email extends Email {
       required final String body,
       required final DateTime createdAt,
       required final EmailStatus status,
-      final DateTime? sentAt}) = _$EmailImpl;
+      final DateTime? sentAt,
+      final DateTime? followUpAt}) = _$EmailImpl;
   const _Email._() : super._();
 
   factory _Email.fromJson(Map<String, dynamic> json) = _$EmailImpl.fromJson;
@@ -308,6 +333,11 @@ abstract class _Email extends Email {
 
   /// The date and time the email was sent or scheduled
   DateTime? get sentAt;
+  @override
+
+  /// This is the value for follow up emails, it will be the days to wait
+  /// to send the email
+  DateTime? get followUpAt;
   @override
   @JsonKey(ignore: true)
   _$$EmailImplCopyWith<_$EmailImpl> get copyWith =>
