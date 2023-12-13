@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:nidus_smpt/nidus_smpt.dart';
-import 'package:nidus_smpt/src/db/db.dart';
 
 void main() async {
   String message;
