@@ -46,19 +46,19 @@ void main() async {
   );
 
   final dbConn = await Database.initialConnection(
-    host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
-    databaseName: 'db-1.10.3',
-    userName: 'postgresadmin',
-    password: '1Tzb7l18FSBEELjn',
+    host: '',
+    databaseName: '',
+    userName: '',
+    password: '',
     port: 5432,
   );
 
   await Database(dbConn).initialFixture('public');
 
   final smpt = NidusSmpt(
-    email: 'noreply@alcanza.com.do',
-    password: 'AccesoNuevo**2023',
-    displayName: 'Alcanza',
+    email: '',
+    password: '',
+    displayName: '',
     variant: SmptVariant.outlook,
     database: Database(dbConn),
   );
