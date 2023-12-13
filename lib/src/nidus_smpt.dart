@@ -226,14 +226,13 @@ class NidusSmpt {
       if (emails.isNotEmpty) {
         log.finest('Fetched ${emails.length} emails with follow up');
         for (final email in emails) {
-          if (email.followUpAt!.isAfter(DateTime.now())) continue;
+          if (!email.followUpAt!.isToday) continue;
 
           await sendEmail(
             to: email.email,
             subject: email.subject,
             htmlBody: email.body,
           );
-          await _deleteEmailInQueue(email.id);
         }
       }
 
@@ -243,4 +242,13 @@ class NidusSmpt {
       rethrow;
     }
   }
+}
+
+///
+extension DateTimeX on DateTime {
+  ///
+  DateTime get now => DateTime.now();
+
+  ///
+  bool get isToday => day == now.day && year == now.year && month == now.month;
 }
