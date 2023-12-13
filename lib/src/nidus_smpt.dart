@@ -129,30 +129,30 @@ class NidusSmpt {
 
   /// This method will fetch all the emails in the queue and send them. it will
   /// avoid sending the emails with sentAt different than [DateTime.now()].
-  // Future<void> resendEmailsInQueue() async {
-  //   try {
-  //     final emails = await database.fetchEmailsInQueue();
+  Future<void> resendEmailsInQueue() async {
+    try {
+      final emails = await database.fetchEmailsInQueue();
 
-  //     if (emails.isNotEmpty) {
-  //       log.finest('Fetched ${emails.length} emails from queue');
-  //       for (final email in emails) {
-  //         if (email.sentat != DateTime.now()) continue;
+      if (emails.isNotEmpty) {
+        log.finest('Fetched ${emails.length} emails from queue');
+        for (final email in emails) {
+          if (email.sentAt != DateTime.now()) continue;
 
-  //         await sendEmail(
-  //           to: email.to,
-  //           subject: email.subject,
-  //           htmlBody: email.body,
-  //         );
-  //         await _deleteEmailInQueue(email.id);
-  //       }
-  //     }
+          await sendEmail(
+            to: email.email,
+            subject: email.subject,
+            htmlBody: email.body,
+          );
+          await _deleteEmailInQueue(email.id);
+        }
+      }
 
-  //     return;
-  //   } catch (e, st) {
-  //     log.severe('We should handle', e, st);
-  //     rethrow;
-  //   }
-  // }
+      return;
+    } catch (e, st) {
+      log.severe('We should handle', e, st);
+      rethrow;
+    }
+  }
 
   /// This method will add and email to the queue. it could be a email
   /// that failed to send or a scheduled email.

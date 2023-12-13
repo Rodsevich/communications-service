@@ -47,7 +47,7 @@ void main() async {
 
   final dbConn = await Database.initialConnection(
     host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
-    databaseName: 'db-1.10.1',
+    databaseName: 'db-1.10.3',
     userName: 'postgresadmin',
     password: '1Tzb7l18FSBEELjn',
     port: 5432,

@@ -1,4 +1,5 @@
 import 'package:nidus_smpt/src/enums.dart';
+import 'package:nidus_smpt/src/models/email/email.dart';
 import 'package:postgres/postgres.dart';
 
 /// {@template database}
@@ -132,11 +133,27 @@ class Database {
 
   /// This method fetch all the emails in the queue. This emails can be
   /// failures or scheduled emails.
-  Future<void> fetchEmailsInQueue() async {
+  Future<List<Email>> fetchEmailsInQueue() async {
     try {
       final query = await connection.execute(
         'SELECT * FROM emailqueue WHERE sentat IS NULL',
       );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime?,
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+          );
+        },
+      ).toList();
+
+      return results;
     } catch (e) {
       rethrow;
     }
