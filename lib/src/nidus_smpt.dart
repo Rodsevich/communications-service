@@ -73,7 +73,7 @@ class NidusSmpt {
 
   /// This method sends an email to the recipient.
   Future<void> sendEmail({
-    required List<String> to,
+    required String to,
     required String subject,
     required String htmlBody,
     DateTime? sentAt,
@@ -140,7 +140,7 @@ class NidusSmpt {
           if (email.sentAt != DateTime.now()) continue;
 
           await sendEmail(
-            to: [email.email],
+            to: email.email,
             subject: email.subject,
             htmlBody: email.body,
           );
@@ -229,7 +229,7 @@ class NidusSmpt {
           if (!email.followUpAt!.isToday) continue;
 
           await sendEmail(
-            to: [email.email],
+            to: email.email,
             subject: email.subject,
             htmlBody: email.body,
           );
