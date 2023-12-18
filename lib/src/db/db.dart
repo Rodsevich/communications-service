@@ -101,7 +101,8 @@ class Database {
     try {
       await connection.execute(
         Sql.named(
-            'INSERT INTO emailsent ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status, @followup)'),
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followup) VALUES (@to, @subject, @body, @sentat, @status, @followup)',
+        ),
         parameters: {
           'to': email,
           'subject': subject,
