@@ -108,7 +108,9 @@ class Database {
           'body': body,
           'sentat': DateTime.now(),
           'status': EmailStatus.sent.index,
-          'followup': DateTime.now().add(Duration(days: followUpDays!)),
+          'followup': followUpDays != null
+              ? DateTime.now().add(Duration(days: followUpDays))
+              : null,
         },
       );
     } catch (e) {
