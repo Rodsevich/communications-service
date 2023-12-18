@@ -101,7 +101,7 @@ class Database {
     try {
       await connection.execute(
         Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followup) VALUES (@to, @subject, @body, @sentat, @status, @followup)',
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat)',
         ),
         parameters: {
           'to': email,
@@ -109,7 +109,7 @@ class Database {
           'body': body,
           'sentat': DateTime.now(),
           'status': EmailStatus.sent.index,
-          'followup': followUpDays != null
+          'followupat': followUpDays != null
               ? DateTime.now().add(Duration(days: followUpDays))
               : null,
         },
