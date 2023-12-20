@@ -1,0 +1,115 @@
+<mxfile host="app.diagrams.net" modified="2023-12-20T16:19:05.270Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" etag="UiM8NTji9jRO1eHi7vXu" version="22.1.11" type="github">
+  <diagram name="Página-1" id="6p4U9afs-VzxvYRWkTQ6">
+    <mxGraphModel dx="1434" dy="837" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-6" value="Mail service" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.cloud_service_package_file;" parent="1" vertex="1">
+          <mxGeometry x="140" y="150" width="42.5" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="L0MS7PJifhi6uXP4nVwo-7" target="L0MS7PJifhi6uXP4nVwo-27" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-7" value="MailService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="280" width="180" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-45" value="+ persistencia : PersisStrategy" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-7" vertex="1">
+          <mxGeometry y="26" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-8" value="+ imgUrl : String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-7" vertex="1">
+          <mxGeometry y="52" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-9" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="L0MS7PJifhi6uXP4nVwo-7" vertex="1">
+          <mxGeometry y="78" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-10" value="+ enviarMail(plantilla, data, destinatario)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-7" vertex="1">
+          <mxGeometry y="86" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-16" value="+&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-7" vertex="1">
+          <mxGeometry y="126" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-17" value="Campaña" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="30" width="180" height="206" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-18" value="+ nombre" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="26" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-25" value="+ [] plantillas" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="52" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-19" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="78" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-20" value="+ enviarMail(plantilla, data, destinatario)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="86" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-21" value="+ crearCampaña(Campaña)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="126" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-22" value="+ ??" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-17" vertex="1">
+          <mxGeometry y="166" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="L0MS7PJifhi6uXP4nVwo-27" target="L0MS7PJifhi6uXP4nVwo-33" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="L0MS7PJifhi6uXP4nVwo-27" target="L0MS7PJifhi6uXP4nVwo-46" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-27" value="&amp;lt;abstract&amp;gt; PersistenceStrategy" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="280" width="190" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-28" value="+ ?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-27" vertex="1">
+          <mxGeometry y="26" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-29" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="L0MS7PJifhi6uXP4nVwo-27" vertex="1">
+          <mxGeometry y="52" width="190" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-30" value="+ setUp()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-27" vertex="1">
+          <mxGeometry y="60" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-40" value="+ onMailSent(mailId, token)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-27" vertex="1">
+          <mxGeometry y="100" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-31" value="+ onMailRead(token)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-27" vertex="1">
+          <mxGeometry y="140" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-33" value="PostgresPersistenceStrategy" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="160" y="540" width="190" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-34" value="+ ?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-33" vertex="1">
+          <mxGeometry y="26" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-35" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="L0MS7PJifhi6uXP4nVwo-33" vertex="1">
+          <mxGeometry y="52" width="190" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-36" value="+ setUp() -&amp;gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#006633&quot; style=&quot;font-size: 10px;&quot;&gt;CREATE DATABASE mails...&lt;/font&gt;&lt;/i&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-33" vertex="1">
+          <mxGeometry y="60" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-41" value="+ onMailSent(mailId, token) -&amp;gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#006633&quot; style=&quot;font-size: 10px;&quot;&gt;INSERT INTO mails&lt;/font&gt;&lt;/i&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-33" vertex="1">
+          <mxGeometry y="100" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-37" value="+ onMailRead(token) -&amp;gt;&lt;br&gt;&lt;font color=&quot;#006633&quot;&gt;UPDATE mails WHERE ...&lt;/font&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-33" vertex="1">
+          <mxGeometry y="140" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-46" value="PrHiveServerStrategy" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="450" y="540" width="190" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-47" value="+ ?" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-46" vertex="1">
+          <mxGeometry y="26" width="190" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-48" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="L0MS7PJifhi6uXP4nVwo-46" vertex="1">
+          <mxGeometry y="52" width="190" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-49" value="+ setUp()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-46" vertex="1">
+          <mxGeometry y="60" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-50" value="+ onMailSent(mailId, token) -&amp;gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;i style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 10px;&quot; color=&quot;#006633&quot;&gt;POST &amp;amp;INSERT INTO mails&lt;/font&gt;&lt;/i&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-46" vertex="1">
+          <mxGeometry y="100" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="L0MS7PJifhi6uXP4nVwo-51" value="+ onMailRead(token)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" parent="L0MS7PJifhi6uXP4nVwo-46" vertex="1">
+          <mxGeometry y="140" width="190" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
