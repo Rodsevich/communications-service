@@ -1,7 +1,27 @@
-# Nidus Smpt
+# Communications Service
 
-## USAGE
-    to use first we need to run  dart lib/tool/initial_fixture.sh "schema name" and it will generate the tables for this package to work and generate all the files
-    for database connections and models for this smpt.
+#### Roadmap
 
-    then we can use the package by importing the package and using the functions in the package.
+##### Core
+- [ ] Envío de mails
+- [ ] Persistencia de seguimientos en BDs
+    - [ ] Postgres
+- [ ] Read time de mails
+- [ ] Bulk sender
+
+##### Deseables
+
+- [ ] Campañas de seguimiento
+- [ ] ABM de plantillas
+- [ ] Message queue
+- [ ] Persistencia en BDs
+    - [ ] Isar
+    - [ ] MongoDB
+    - [ ] _you name it_
+- [ ] Integración con third-partys
+    - [ ] Twilio
+    - [ ] Sendgrid
+    - [ ] Mailgunner
+    - [ ] _you name it_
+- [ ] Agrupamiento / lista de mails
+- [ ] Webhooks
