@@ -1,15 +1,15 @@
+import 'package:communication_service/src/enums.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:nidus_smpt/src/enums.dart';
 
 part 'email.freezed.dart';
 part 'email.g.dart';
 
 @freezed
+
 /// {@template email}
 /// [Email] class is the model for the emails
 /// {@endtemplate}
 class Email with _$Email {
-
   /// {@macro email}
   const factory Email({
     /// The id of the email
@@ -36,6 +36,9 @@ class Email with _$Email {
     /// This is the value for follow up emails, it will be the days to wait
     /// to send the email
     DateTime? followUpAt,
+
+    /// The date on which the email was read by the recipient.
+    DateTime? readOn,
   }) = _Email;
 
   /// {@macro fromJson}

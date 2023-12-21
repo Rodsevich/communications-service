@@ -1,13 +1,15 @@
-import 'package:nidus_smpt/src/enums.dart';
-import 'package:nidus_smpt/src/models/email/email.dart';
+// ignore_for_file: lines_longer_than_80_chars
+
+import 'package:communication_service/src/enums.dart';
+import 'package:communication_service/src/models/email/email.dart';
 import 'package:postgres/postgres.dart';
 
 /// {@template database}
 /// [Database] class handles all the execute's to the database
 /// {@endtemplate}
 class Database {
-  /// {@macro database}
-  Database(this.connection);
+  ///
+  Database();
 
   /// The connection to the database
   late final Connection connection;
@@ -63,6 +65,8 @@ class Database {
       followUpAt TIMESTAMP,
     );
   ''');
+
+    return;
   }
 
   /// This method allows the insertion of an email to the queue.
@@ -76,7 +80,7 @@ class Database {
     try {
       await connection.execute(
         Sql.named(
-          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)',
+          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status',
         ),
         parameters: {
           'to': email,
@@ -86,6 +90,7 @@ class Database {
           'status': status.index,
         },
       );
+      return;
     } catch (e) {
       rethrow;
     }
@@ -101,7 +106,7 @@ class Database {
     try {
       await connection.execute(
         Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat)',
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat))',
         ),
         parameters: {
           'to': email,
@@ -114,6 +119,7 @@ class Database {
               : null,
         },
       );
+      return;
     } catch (e) {
       rethrow;
     }
@@ -126,12 +132,18 @@ class Database {
   ) async {
     try {
       await connection.execute(
-        Sql.named('UPDATE emailsent SET status = @status WHERE id = @id'),
+        Sql.named(
+          'UPDATE emailsent '
+          'SET status = @status, readOn = @readOn '
+          'WHERE id = @id',
+        ),
         parameters: {
           'id': id,
           'status': EmailStatus.read.index,
+          'readOn': DateTime.now(),
         },
       );
+      return;
     } catch (e) {
       rethrow;
     }
@@ -175,6 +187,7 @@ class Database {
           'id': id,
         },
       );
+      return;
     } catch (e) {
       rethrow;
     }

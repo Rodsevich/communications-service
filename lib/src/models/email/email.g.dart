@@ -19,6 +19,9 @@ _$EmailImpl _$$EmailImplFromJson(Map<String, dynamic> json) => _$EmailImpl(
       followUpAt: json['followUpAt'] == null
           ? null
           : DateTime.parse(json['followUpAt'] as String),
+      readOn: json['readOn'] == null
+          ? null
+          : DateTime.parse(json['readOn'] as String),
     );
 
 Map<String, dynamic> _$$EmailImplToJson(_$EmailImpl instance) =>
@@ -31,6 +34,7 @@ Map<String, dynamic> _$$EmailImplToJson(_$EmailImpl instance) =>
       'status': _$EmailStatusEnumMap[instance.status]!,
       'sentAt': instance.sentAt?.toIso8601String(),
       'followUpAt': instance.followUpAt?.toIso8601String(),
+      'readOn': instance.readOn?.toIso8601String(),
     };
 
 const _$EmailStatusEnumMap = {

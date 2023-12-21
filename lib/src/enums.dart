@@ -1,8 +1,7 @@
 /// This is the variant of the SMTP server.
-enum SmptVariant {
-  
+enum ServerProvider {
   /// This is for using gmail as the SMTP server.
-  gmail, 
+  gmail,
 
   /// This is for using outlook as the SMTP server.
   outlook,
@@ -10,7 +9,6 @@ enum SmptVariant {
 
 /// This is the status of the email.
 enum EmailStatus {
-
   /// This is for an email that has not been sent.
   notSent,
 
