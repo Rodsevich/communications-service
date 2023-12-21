@@ -1,31 +1,44 @@
-import 'package:communication_service/src/db/db.dart';
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:communication_service/src/delegates/persistance/persistance_delegate.dart';
 import 'package:communication_service/src/enums.dart';
-import 'package:communication_service/src/extensions/extensions.dart';
 import 'package:communication_service/src/models/email/email.dart';
-import 'package:enough_mail/mime.dart';
 import 'package:logging/src/logger.dart';
+import 'package:postgres/postgres.dart';
 
-///
-class PostgresStrategy extends PersistanceDelegate {
-  ///
+/// {@template PostgresStrategy}
+/// Concrete implementation of [PersistanceDelegate] using a PostgreSQL database.
+/// {endtemplate}
+class PostgresStrategy implements PersistanceDelegate {
+  /// {@macro PostgresStrategy}
   PostgresStrategy({
+    /// The hostname or IP address of the PostgreSQL server.
     required String host,
+
+    /// The name of the database to connect to.
     required String databaseName,
+
+    /// The username for authentication.
     required String userName,
+
+    /// The password for authentication.
     required String dbPassword,
+
+    /// The port number on which the PostgreSQL server is listening.
     required int port,
+
+    /// The SSL mode to use for the connection
+    SslMode? sslMode,
   })  : _host = host,
         _databaseName = databaseName,
         _userName = userName,
         _dbPassword = dbPassword,
         _port = port,
+        _sslMode = sslMode,
         super();
 
   @override
   Logger get logger => Logger('PostgresStrategy');
-
-  late final Database _database;
 
   final String _host;
 
@@ -37,127 +50,248 @@ class PostgresStrategy extends PersistanceDelegate {
 
   final int _port;
 
+  final SslMode? _sslMode;
+
+  /// The connection to the database
+  late final Connection connection;
+
+  /// Initializes the database with the necessary tables for email persistence.
+  ///
+  /// [schema]: The name of the schema where the tables should be created.
+  Future<void> initialFixture(String schema) async {
+    await connection.execute('''
+      CREATE TABLE IF NOT EXISTS $schema.EmailQueue (
+      id SERIAL PRIMARY KEY,
+      createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      sentAt TIMESTAMP,
+      "to" VARCHAR(255) NOT NULL,
+      subject VARCHAR(255) NOT NULL,
+      body TEXT NOT NULL,
+      status INT NOT NULL DEFAULT 0,
+    );
+  ''');
+
+    await connection.execute('''
+      CREATE TABLE IF NOT EXISTS $schema.EmailSent (
+      id SERIAL PRIMARY KEY,
+      createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      sentAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "to" VARCHAR(255) NOT NULL,
+      subject VARCHAR(255) NOT NULL,
+      body TEXT NOT NULL,
+      status INT NOT NULL DEFAULT 0,
+      followUpAt TIMESTAMP,
+    );
+  ''');
+
+    return;
+  }
+
   @override
   Future<void> setUp() async {
-    _database = Database();
-
-    await Database.initialConnection(
-      host: _host,
-      databaseName: _databaseName,
-      userName: _userName,
-      password: _dbPassword,
-      port: _port,
+    await Connection.open(
+      Endpoint(
+        host: _host,
+        database: _databaseName,
+        username: _userName,
+        password: _dbPassword,
+        port: _port,
+      ),
+      settings: _sslMode != null
+          ? ConnectionSettings(
+              sslMode: _sslMode,
+            )
+          : null,
     );
   }
 
   @override
-  Future<List<Email>> fetchEmailsInDateRange(DateTime date) async {
-    try {
-      final emails = await _database.fetchEmailsInDateRange(date);
-      return emails;
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> resendEmailsInQueue() async {
-    try {
-      final emails = await _database.fetchEmailsInQueue();
-
-      if (emails.isNotEmpty) {
-        logger.finest('Fetched ${emails.length} emails from queue');
-        for (final email in emails) {
-          if (email.sentAt != DateTime.now()) continue;
-
-          await sendEmail(
-            to: email.email,
-            subject: email.subject,
-            htmlBody: email.body,
-          );
-          await deleteEmailInQueue(email.id);
-        }
-      }
-
-      return;
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> sendEmailsWithFollowUp() async {
-    try {
-      final emails = await _database.fetchEmailsWithFollowUp();
-
-      if (emails.isNotEmpty) {
-        logger.finest('Fetched ${emails.length} emails with follow up');
-        for (final email in emails) {
-          if (!email.followUpAt!.isToday) continue;
-
-          await sendEmail(
-            to: email.email,
-            subject: email.subject,
-            htmlBody: email.body,
-          );
-        }
-      }
-
-      return;
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> addToEmailQueue({
-    required MimeMessage message,
+  Future<void> insertEmailToQueue({
+    required String email,
+    required String subject,
+    required String body,
     required EmailStatus status,
+    DateTime? sentAt,
   }) async {
     try {
-      await _database.insertEmailToQueue(
-        email: message.recipients.first.toString(),
-        subject: message.subject ?? '',
-        body: message.html ?? '',
-        status: status,
+      await connection.execute(
+        Sql.named(
+          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status',
+        ),
+        parameters: {
+          'to': email,
+          'subject': subject,
+          'body': body,
+          'sentat': sentAt,
+          'status': status.index,
+        },
       );
-      logger.finer('Email ${message.subject} added to the queue');
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
+      return;
+    } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<void> markEmailAsSent({
-    required MimeMessage message,
+  Future<void> insertEmailSent({
+    required String email,
+    required String subject,
+    required String body,
     int? followUpDays,
   }) async {
     try {
-      await _database.insertEmailSent(
-        email: message.recipients.first.toString(),
-        subject: message.subject ?? '',
-        body: message.html ?? '',
-        followUpDays: followUpDays,
+      await connection.execute(
+        Sql.named(
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat))',
+        ),
+        parameters: {
+          'to': email,
+          'subject': subject,
+          'body': body,
+          'sentat': DateTime.now(),
+          'status': EmailStatus.sent.index,
+          'followupat': followUpDays != null
+              ? DateTime.now().add(Duration(days: followUpDays))
+              : null,
+        },
       );
-      logger.finer('Email sent to ${message.recipients.first}');
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
+      return;
+    } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<void> deleteEmailInQueue(int id) async {
+  Future<void> updateEmailAsRead(
+    String id,
+  ) async {
     try {
-      await _database.deleteEmailsInQueue(id);
-      logger.finer('Email with id: $id, deleted from queue');
+      await connection.execute(
+        Sql.named(
+          'UPDATE emailsent '
+          'SET status = @status, readOn = @readOn '
+          'WHERE id = @id',
+        ),
+        parameters: {
+          'id': id,
+          'status': EmailStatus.read.index,
+          'readOn': DateTime.now(),
+        },
+      );
       return;
-    } catch (e, st) {
-      logger.severe('We should handle', e, st);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Email>> fetchEmailsInQueue() async {
+    try {
+      final query = await connection.execute(
+        'SELECT * FROM emailqueue WHERE sentat IS NULL',
+      );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime?,
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+          );
+        },
+      ).toList();
+
+      return results;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteEmailsInQueue(int id) async {
+    try {
+      await connection.execute(
+        Sql.named('DELETE FROM emailqueue WHERE id = @id'),
+        parameters: {
+          'id': id,
+        },
+      );
+      return;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Email>> fetchEmailsInDateRange(DateTime datetime) async {
+    try {
+      final query = await connection.execute(
+        Sql.named(
+          '''
+              SELECT * FROM emailsent 
+              WHERE sentat <= @datetime 
+              AND status != @readStatus
+              ''',
+        ),
+        parameters: {
+          'datetime': datetime,
+          'readStatus': EmailStatus.read.index,
+        },
+      );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime? ?? DateTime.now(),
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+          );
+        },
+      ).toList();
+
+      return results;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Email>> fetchEmailsWithFollowUp() async {
+    try {
+      final query = await connection.execute(
+        Sql.named(
+          '''
+              SELECT * FROM emailsent 
+                WHERE followupat IS NOT NULL
+              ''',
+        ),
+      );
+
+      final results = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime? ?? DateTime.now(),
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+            followUpAt: row[7] as DateTime? ?? DateTime.now(),
+          );
+        },
+      ).toList();
+
+      return results;
+    } catch (e) {
       rethrow;
     }
   }
