@@ -89,7 +89,7 @@ class PostgresStrategy implements PersistanceDelegate {
 
   @override
   Future<void> setUp() async {
-    await Connection.open(
+    connection = await Connection.open(
       Endpoint(
         host: _host,
         database: _databaseName,

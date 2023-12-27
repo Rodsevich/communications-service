@@ -31,19 +31,6 @@ class CommunicationService {
     // TODO(andre): deberia ser una clase
     required ServerProvider serverProvider,
   }) : _persistanceDelegate = persistanceDelegate {
-    try {
-      _persistanceDelegate.setUp();
-
-      logger.finest('Communication Service instance created');
-    } catch (e, st) {
-      logger.shout(
-        'Error while creating Communication Service instance',
-        e,
-        st,
-      );
-      rethrow;
-    }
-
     switch (serverProvider) {
       case ServerProvider.gmail:
         _smtpServer = gmail(email, password);
@@ -78,6 +65,22 @@ class CommunicationService {
 
   /// This is the logger for this class.
   final logger = Logger('CommunicarionService');
+
+  /// Performs any necessary setup tasks for the persistence delegate.
+  Future<void> setUp() async {
+    try {
+      _persistanceDelegate.setUp();
+
+      logger.finest('Communication Service instance created');
+    } catch (e, st) {
+      logger.shout(
+        'Error while creating Communication Service instance',
+        e,
+        st,
+      );
+      rethrow;
+    }
+  }
 
   /// This method sends an email to the recipient.
   Future<void> sendEmail({
