@@ -203,7 +203,6 @@ class CommunicationService {
         subject: message.subject ?? '',
         body: message.html ?? '',
         status: status,
-        
       );
       logger.finer('Email ${message.subject} added to the queue');
     } catch (e, st) {

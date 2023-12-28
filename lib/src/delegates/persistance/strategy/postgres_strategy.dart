@@ -67,7 +67,7 @@ class PostgresStrategy implements PersistanceDelegate {
       "to" VARCHAR(255) NOT NULL,
       subject VARCHAR(255) NOT NULL,
       body TEXT NOT NULL,
-      status INT NOT NULL DEFAULT 0
+      status INT NOT NULL DEFAULT 0,
     );
   ''');
 
@@ -80,7 +80,7 @@ class PostgresStrategy implements PersistanceDelegate {
       subject VARCHAR(255) NOT NULL,
       body TEXT NOT NULL,
       status INT NOT NULL DEFAULT 0,
-      followUpAt TIMESTAMP
+      followUpAt TIMESTAMP,
     );
   ''');
 
@@ -114,32 +114,18 @@ class PostgresStrategy implements PersistanceDelegate {
     DateTime? sentAt,
   }) async {
     try {
-      final parameters = {
-        'to': email,
-        'subject': subject,
-        'body': body,
-        'status': status.index,
-      };
-
-      var queryHarcoded =
-          'INSERT INTO emailqueue ("to", subject, body, status) VALUES ($email, $subject, $body, ${status.index})';
-      print(queryHarcoded);
-
-      final query =
-          'INSERT INTO emailqueue ("to", subject, body, status) VALUES (@to, @subject, @body, @status)';
-      // if (sentAt != null) {
-      //   parameters['sentat'] = sentAt;
-      //   query =
-      //       'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)';
-      // }
-
-      final s = await connection.execute(
-        Sql.named(query),
-        parameters: parameters,
+      await connection.execute(
+        Sql.named(
+          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status',
+        ),
+        parameters: {
+          'to': email,
+          'subject': subject,
+          'body': body,
+          'sentat': sentAt,
+          'status': status.index,
+        },
       );
-
-      print(s);
-
       return;
     } catch (e) {
       rethrow;
@@ -156,7 +142,7 @@ class PostgresStrategy implements PersistanceDelegate {
     try {
       await connection.execute(
         Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat))',
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat)',
         ),
         parameters: {
           'to': email,
@@ -309,14 +295,4 @@ class PostgresStrategy implements PersistanceDelegate {
       rethrow;
     }
   }
-}
-
-void main() async {
-  PostgresStrategy(
-    host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
-    databaseName: 'defaultdb',
-    userName: 'postgresadmin',
-    dbPassword: '1Tzb7l18FSBEELjn',
-    port: 5432,
-  ).initialFixture('public');
 }
