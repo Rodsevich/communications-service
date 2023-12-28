@@ -49,16 +49,16 @@ void main() async {
   // no contiene las tablas requeridas para el mailer
   final smpt = CommunicationService(
     persistanceDelegate: PostgresStrategy(
-      host: 'db.lkddzmefpvkyntmnozhg.supabase.co',
-      databaseName: 'postgres',
-      userName: 'postgres',
-      dbPassword: 'spExtIDjmdayDIwd',
+      host: 'alcanza-qa.cd2usnwrufvg.us-east-2.rds.amazonaws.com',
+      databaseName: 'defaultdb',
+      userName: 'postgresadmin',
+      dbPassword: '1Tzb7l18FSBEELjn',
       port: 5432,
     ),
     email: 'noreply@alcanza.com.do',
     displayName: 'noreply@alcanza.com.do',
     password: 'AccesoNuevo**2023',
-    serverProvider: ServerProvider.gmail,
+    serverProvider: ServerProvider.outlook,
   );
 
   await smpt.setUp();
@@ -66,20 +66,7 @@ void main() async {
   await smpt.sendEmail(
     to: 'ficettiesteban@gmail.com',
     subject: 'No se',
-    htmlBody: '''
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your Page Title</title>
-</head>
-<body>
-
-    <h1>Hello, World!</h1>
-
-</body>
-</html>
-
-''',
+    htmlBody: '<!DOCTYPE html><html><head><title>Your Page Title</title></head><body><h1>Hello, World!</h1></body</html>',
   );
 
   exit(0);
