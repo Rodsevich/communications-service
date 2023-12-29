@@ -242,4 +242,16 @@ class CommunicationService {
       rethrow;
     }
   }
+
+  /// This method will mark the email as read on the database.
+  Future<void> markEmailAsRead(String emailId) async {
+    try {
+      await _persistanceDelegate.updateEmailAsRead(emailId);
+      logger.finer('Email with id: $emailId, marked as read');
+      return;
+    } catch (e, st) {
+      logger.severe('We should handle', e, st);
+      rethrow;
+    }
+  }
 }
