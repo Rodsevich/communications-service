@@ -133,16 +133,16 @@ class PostgresStrategy implements PersistanceDelegate {
   }
 
   @override
-  Future<void> insertEmailSent({
+  Future<Email> insertEmailSent({
     required String email,
     required String subject,
     required String body,
     int? followUpDays,
   }) async {
     try {
-      await connection.execute(
+      final query = await connection.execute(
         Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat)',
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat) RETURNING *',
         ),
         parameters: {
           'to': email,
@@ -155,7 +155,22 @@ class PostgresStrategy implements PersistanceDelegate {
               : null,
         },
       );
-      return;
+
+      final emailSent = query.map(
+        (row) {
+          return Email(
+            id: row[0] as int? ?? 0,
+            createdAt: row[1] as DateTime? ?? DateTime.now(),
+            sentAt: row[2] as DateTime?,
+            email: row[3] as String? ?? '-',
+            subject: row[4] as String? ?? '-',
+            body: row[5] as String? ?? '-',
+            status: EmailStatus.values[row[6] as int? ?? 0],
+          );
+        },
+      ).first;
+
+      return emailSent;
     } catch (e) {
       rethrow;
     }

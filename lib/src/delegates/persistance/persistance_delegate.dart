@@ -31,7 +31,7 @@ abstract class PersistanceDelegate {
   });
 
   /// Allows the insertion of an email to the sent table.
-  FutureOr<void> insertEmailSent({
+  FutureOr<Email> insertEmailSent({
     required String email,
     required String subject,
     required String body,

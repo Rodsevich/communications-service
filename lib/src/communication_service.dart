@@ -83,7 +83,7 @@ class CommunicationService {
   }
 
   /// This method sends an email to the recipient.
-  Future<void> sendEmail({
+  Future<Email?> sendEmail({
     required String to,
     required String subject,
     required String htmlBody,
@@ -107,7 +107,7 @@ class CommunicationService {
       );
 
       logger.finer('Email added to queue for $to');
-      return;
+      return null;
     }
 
     try {
@@ -117,10 +117,13 @@ class CommunicationService {
         maxAttempts: 8,
       );
 
-      await _markEmailAsSent(message: message, followUpDays: followUpDays);
+      final emailSent = await _markEmailAsSent(
+        message: message,
+        followUpDays: followUpDays,
+      );
 
       logger.fine('Email sent successfully to $to');
-      return;
+      return emailSent;
     } on Exception catch (e, st) {
       logger.severe('We should handle this error', e, st);
       await _addToEmailQueue(message: message, status: EmailStatus.failed);
@@ -213,18 +216,20 @@ class CommunicationService {
 
   /// This method will mark an email as sent and added to the correct table
   /// on the database.
-  Future<void> _markEmailAsSent({
+  Future<Email> _markEmailAsSent({
     required Message message,
     int? followUpDays,
   }) async {
     try {
-      await _persistanceDelegate.insertEmailSent(
+      final emailSent = await _persistanceDelegate.insertEmailSent(
         email: message.recipients.first.toString(),
         subject: message.subject ?? '',
         body: message.html ?? '',
         followUpDays: followUpDays,
       );
       logger.finer('Email sent to ${message.recipients.first}');
+
+      return emailSent;
     } catch (e, st) {
       logger.severe('We should handle', e, st);
       rethrow;
