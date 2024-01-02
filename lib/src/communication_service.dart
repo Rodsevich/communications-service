@@ -87,6 +87,7 @@ class CommunicationService {
     required String to,
     required String subject,
     required String htmlBody,
+    required String logoUuid,
     DateTime? sentAt,
     int? followUpDays,
     List<Attachment>? attachments,
@@ -120,6 +121,7 @@ class CommunicationService {
       final emailSent = await _markEmailAsSent(
         message: message,
         followUpDays: followUpDays,
+        logoUuid: logoUuid,
       );
 
       logger.fine('Email sent successfully to $to');
@@ -157,6 +159,7 @@ class CommunicationService {
             to: email.email,
             subject: email.subject,
             htmlBody: email.body,
+            logoUuid: email.logoUuid,
           );
           await deleteEmailInQueue(email.id);
         }
@@ -183,6 +186,7 @@ class CommunicationService {
             to: email.email,
             subject: email.subject,
             htmlBody: email.body,
+            logoUuid: email.logoUuid,
           );
         }
       }
@@ -218,6 +222,7 @@ class CommunicationService {
   /// on the database.
   Future<Email> _markEmailAsSent({
     required Message message,
+    required String logoUuid,
     int? followUpDays,
   }) async {
     try {
@@ -226,6 +231,7 @@ class CommunicationService {
         subject: message.subject ?? '',
         body: message.html ?? '',
         followUpDays: followUpDays,
+        logoUuid: logoUuid,
       );
       logger.finer('Email sent to ${message.recipients.first}');
 

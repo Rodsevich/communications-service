@@ -30,6 +30,10 @@ class Email with _$Email {
     /// The status of the email
     required EmailStatus status,
 
+    /// This is the generated [Uuid] for the logo, used for the
+    /// tracking pixel
+    required String logoUuid,
+
     /// The date and time the email was sent or scheduled
     DateTime? sentAt,
 

@@ -63,11 +63,11 @@ void main() async {
 
   await smpt.setUp();
 
-  await smpt.sendEmail(
-    to: 'ficettiesteban@gmail.com',
-    subject: 'No se',
-    htmlBody: '<!DOCTYPE html><html><head><title>Your Page Title</title></head><body><h1>Hello, World!</h1></body</html>',
-  );
+  // await smpt.sendEmail(
+  //   to: 'ficettiesteban@gmail.com',
+  //   subject: 'No se',
+  //   htmlBody: '<!DOCTYPE html><html><head><title>Your Page Title</title></head><body><h1>Hello, World!</h1></body</html>',
+  // );
 
   exit(0);
 }

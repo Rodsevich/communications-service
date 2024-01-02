@@ -13,6 +13,7 @@ _$EmailImpl _$$EmailImplFromJson(Map<String, dynamic> json) => _$EmailImpl(
       body: json['body'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       status: $enumDecode(_$EmailStatusEnumMap, json['status']),
+      logoUuid: json['logoUuid'] as String,
       sentAt: json['sentAt'] == null
           ? null
           : DateTime.parse(json['sentAt'] as String),
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$EmailImplToJson(_$EmailImpl instance) =>
       'body': instance.body,
       'createdAt': instance.createdAt.toIso8601String(),
       'status': _$EmailStatusEnumMap[instance.status]!,
+      'logoUuid': instance.logoUuid,
       'sentAt': instance.sentAt?.toIso8601String(),
       'followUpAt': instance.followUpAt?.toIso8601String(),
       'readOn': instance.readOn?.toIso8601String(),

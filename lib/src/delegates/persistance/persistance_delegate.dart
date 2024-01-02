@@ -35,6 +35,7 @@ abstract class PersistanceDelegate {
     required String email,
     required String subject,
     required String body,
+    required String logoUuid,
     int? followUpDays,
   });
 

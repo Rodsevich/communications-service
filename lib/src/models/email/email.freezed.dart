@@ -38,6 +38,10 @@ mixin _$Email {
   /// The status of the email
   EmailStatus get status => throw _privateConstructorUsedError;
 
+  /// This is the generated [Uuid] for the logo, used for the
+  /// tracking pixel
+  String get logoUuid => throw _privateConstructorUsedError;
+
   /// The date and time the email was sent or scheduled
   DateTime? get sentAt => throw _privateConstructorUsedError;
 
@@ -65,6 +69,7 @@ abstract class $EmailCopyWith<$Res> {
       String body,
       DateTime createdAt,
       EmailStatus status,
+      String logoUuid,
       DateTime? sentAt,
       DateTime? followUpAt,
       DateTime? readOn});
@@ -89,6 +94,7 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
+    Object? logoUuid = null,
     Object? sentAt = freezed,
     Object? followUpAt = freezed,
     Object? readOn = freezed,
@@ -118,6 +124,10 @@ class _$EmailCopyWithImpl<$Res, $Val extends Email>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as EmailStatus,
+      logoUuid: null == logoUuid
+          ? _value.logoUuid
+          : logoUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       sentAt: freezed == sentAt
           ? _value.sentAt
           : sentAt // ignore: cast_nullable_to_non_nullable
@@ -148,6 +158,7 @@ abstract class _$$EmailImplCopyWith<$Res> implements $EmailCopyWith<$Res> {
       String body,
       DateTime createdAt,
       EmailStatus status,
+      String logoUuid,
       DateTime? sentAt,
       DateTime? followUpAt,
       DateTime? readOn});
@@ -170,6 +181,7 @@ class __$$EmailImplCopyWithImpl<$Res>
     Object? body = null,
     Object? createdAt = null,
     Object? status = null,
+    Object? logoUuid = null,
     Object? sentAt = freezed,
     Object? followUpAt = freezed,
     Object? readOn = freezed,
@@ -199,6 +211,10 @@ class __$$EmailImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as EmailStatus,
+      logoUuid: null == logoUuid
+          ? _value.logoUuid
+          : logoUuid // ignore: cast_nullable_to_non_nullable
+              as String,
       sentAt: freezed == sentAt
           ? _value.sentAt
           : sentAt // ignore: cast_nullable_to_non_nullable
@@ -225,6 +241,7 @@ class _$EmailImpl extends _Email {
       required this.body,
       required this.createdAt,
       required this.status,
+      required this.logoUuid,
       this.sentAt,
       this.followUpAt,
       this.readOn})
@@ -257,6 +274,11 @@ class _$EmailImpl extends _Email {
   @override
   final EmailStatus status;
 
+  /// This is the generated [Uuid] for the logo, used for the
+  /// tracking pixel
+  @override
+  final String logoUuid;
+
   /// The date and time the email was sent or scheduled
   @override
   final DateTime? sentAt;
@@ -272,7 +294,7 @@ class _$EmailImpl extends _Email {
 
   @override
   String toString() {
-    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, status: $status, sentAt: $sentAt, followUpAt: $followUpAt, readOn: $readOn)';
+    return 'Email(id: $id, email: $email, subject: $subject, body: $body, createdAt: $createdAt, status: $status, logoUuid: $logoUuid, sentAt: $sentAt, followUpAt: $followUpAt, readOn: $readOn)';
   }
 
   @override
@@ -287,6 +309,8 @@ class _$EmailImpl extends _Email {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.logoUuid, logoUuid) ||
+                other.logoUuid == logoUuid) &&
             (identical(other.sentAt, sentAt) || other.sentAt == sentAt) &&
             (identical(other.followUpAt, followUpAt) ||
                 other.followUpAt == followUpAt) &&
@@ -296,7 +320,7 @@ class _$EmailImpl extends _Email {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, subject, body,
-      createdAt, status, sentAt, followUpAt, readOn);
+      createdAt, status, logoUuid, sentAt, followUpAt, readOn);
 
   @JsonKey(ignore: true)
   @override
@@ -320,6 +344,7 @@ abstract class _Email extends Email {
       required final String body,
       required final DateTime createdAt,
       required final EmailStatus status,
+      required final String logoUuid,
       final DateTime? sentAt,
       final DateTime? followUpAt,
       final DateTime? readOn}) = _$EmailImpl;
@@ -351,6 +376,11 @@ abstract class _Email extends Email {
 
   /// The status of the email
   EmailStatus get status;
+  @override
+
+  /// This is the generated [Uuid] for the logo, used for the
+  /// tracking pixel
+  String get logoUuid;
   @override
 
   /// The date and time the email was sent or scheduled

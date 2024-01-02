@@ -67,7 +67,7 @@ class PostgresStrategy implements PersistanceDelegate {
       "to" VARCHAR(255) NOT NULL,
       subject VARCHAR(255) NOT NULL,
       body TEXT NOT NULL,
-      status INT NOT NULL DEFAULT 0,
+      status INT NOT NULL DEFAULT 0
     );
   ''');
 
@@ -81,6 +81,7 @@ class PostgresStrategy implements PersistanceDelegate {
       body TEXT NOT NULL,
       status INT NOT NULL DEFAULT 0,
       followUpAt TIMESTAMP,
+      logoUuid TEXT NOT NULL
     );
   ''');
 
@@ -137,6 +138,7 @@ class PostgresStrategy implements PersistanceDelegate {
     required String email,
     required String subject,
     required String body,
+    required String logoUuid,
     int? followUpDays,
   }) async {
     try {
@@ -166,6 +168,7 @@ class PostgresStrategy implements PersistanceDelegate {
             subject: row[4] as String? ?? '-',
             body: row[5] as String? ?? '-',
             status: EmailStatus.values[row[6] as int? ?? 0],
+            logoUuid: row[7] as String? ?? '-',
           );
         },
       ).first;
@@ -178,17 +181,17 @@ class PostgresStrategy implements PersistanceDelegate {
 
   @override
   Future<void> updateEmailAsRead(
-    String id,
+    String logoUuid,
   ) async {
     try {
       await connection.execute(
         Sql.named(
           'UPDATE emailsent '
           'SET status = @status, readOn = @readOn '
-          'WHERE id = @id',
+          'WHERE logouuid = @logoUuid',
         ),
         parameters: {
-          'id': id,
+          'logoUuid': logoUuid,
           'status': EmailStatus.read.index,
           'readOn': DateTime.now(),
         },
@@ -216,6 +219,7 @@ class PostgresStrategy implements PersistanceDelegate {
             subject: row[4] as String? ?? '-',
             body: row[5] as String? ?? '-',
             status: EmailStatus.values[row[6] as int? ?? 0],
+            logoUuid: row[7] as String? ?? '-',
           );
         },
       ).toList();
@@ -268,6 +272,7 @@ class PostgresStrategy implements PersistanceDelegate {
             subject: row[4] as String? ?? '-',
             body: row[5] as String? ?? '-',
             status: EmailStatus.values[row[6] as int? ?? 0],
+            logoUuid: row[7] as String? ?? '-',
           );
         },
       ).toList();
@@ -301,6 +306,7 @@ class PostgresStrategy implements PersistanceDelegate {
             body: row[5] as String? ?? '-',
             status: EmailStatus.values[row[6] as int? ?? 0],
             followUpAt: row[7] as DateTime? ?? DateTime.now(),
+            logoUuid: row[8] as String? ?? '-',
           );
         },
       ).toList();
