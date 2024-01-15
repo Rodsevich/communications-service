@@ -81,7 +81,8 @@ class PostgresStrategy implements PersistanceDelegate {
       body TEXT NOT NULL,
       status INT NOT NULL DEFAULT 0,
       followUpAt TIMESTAMP,
-      logoUuid TEXT NOT NULL
+      logoUuid TEXT NOT NULL,
+      readOn TIMESTAMP
     );
   ''');
 
@@ -117,7 +118,7 @@ class PostgresStrategy implements PersistanceDelegate {
     try {
       await connection.execute(
         Sql.named(
-          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status',
+          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)',
         ),
         parameters: {
           'to': email,
@@ -144,7 +145,7 @@ class PostgresStrategy implements PersistanceDelegate {
     try {
       final query = await connection.execute(
         Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat) VALUES (@to, @subject, @body, @sentat, @status, @followupat) RETURNING *',
+          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat, logouuid) VALUES (@to, @subject, @body, @sentat, @status, @followupat, @logouuid) RETURNING *',
         ),
         parameters: {
           'to': email,
@@ -155,6 +156,7 @@ class PostgresStrategy implements PersistanceDelegate {
           'followupat': followUpDays != null
               ? DateTime.now().add(Duration(days: followUpDays))
               : null,
+          'logouuid': logoUuid,
         },
       );
 
