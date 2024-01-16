@@ -27,8 +27,9 @@ class PostgresStrategy implements PersistanceDelegate {
     /// The port number on which the PostgreSQL server is listening.
     required int port,
 
-    /// The SSL mode to use for the connection
-    SslMode? sslMode,
+    /// Enable or Disable the SSL mode to used for the connection
+    bool sslMode = false,
+
   })  : _host = host,
         _databaseName = databaseName,
         _userName = userName,
@@ -50,14 +51,14 @@ class PostgresStrategy implements PersistanceDelegate {
 
   final int _port;
 
-  final SslMode? _sslMode;
+  final bool _sslMode;
 
   /// The connection to the database
-  late final Connection connection;
+  late final PostgreSQLConnection connection;
 
   /// Initializes the database with the necessary tables for email persistence.
   ///
-  /// [schema]: The name of the schema where the tables should be created.
+  /// [schema] : The name of the schema where the tables should be created.
   Future<void> initialFixture(String schema) async {
     await connection.execute('''
       CREATE TABLE IF NOT EXISTS $schema.EmailQueue (
@@ -91,20 +92,15 @@ class PostgresStrategy implements PersistanceDelegate {
 
   @override
   Future<void> setUp() async {
-    connection = await Connection.open(
-      Endpoint(
-        host: _host,
-        database: _databaseName,
-        username: _userName,
-        password: _dbPassword,
-        port: _port,
-      ),
-      settings: _sslMode != null
-          ? ConnectionSettings(
-              sslMode: _sslMode,
-            )
-          : null,
+    connection = PostgreSQLConnection(
+      _host,
+      _port,
+      _databaseName,
+      username: _userName,
+      password: _dbPassword,
+      useSSL: _sslMode,
     );
+    await connection.open();
   }
 
   @override
@@ -117,10 +113,8 @@ class PostgresStrategy implements PersistanceDelegate {
   }) async {
     try {
       await connection.execute(
-        Sql.named(
-          'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)',
-        ),
-        parameters: {
+        'INSERT INTO emailqueue ("to", subject, body, sentat, status) VALUES (@to, @subject, @body, @sentat, @status)',
+        substitutionValues: {
           'to': email,
           'subject': subject,
           'body': body,
@@ -143,11 +137,9 @@ class PostgresStrategy implements PersistanceDelegate {
     int? followUpDays,
   }) async {
     try {
-      final query = await connection.execute(
-        Sql.named(
-          'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat, logouuid) VALUES (@to, @subject, @body, @sentat, @status, @followupat, @logouuid) RETURNING *',
-        ),
-        parameters: {
+      final query = await connection.query(
+        'INSERT INTO emailsent ("to", subject, body, sentat, status, followupat, logouuid) VALUES (@to, @subject, @body, @sentat, @status, @followupat, @logouuid) RETURNING *',
+        substitutionValues: {
           'to': email,
           'subject': subject,
           'body': body,
@@ -187,12 +179,10 @@ class PostgresStrategy implements PersistanceDelegate {
   ) async {
     try {
       await connection.execute(
-        Sql.named(
-          'UPDATE emailsent '
-          'SET status = @status, readOn = @readOn '
-          'WHERE logouuid = @logoUuid',
-        ),
-        parameters: {
+        'UPDATE emailsent '
+        'SET status = @status, readOn = @readOn '
+        'WHERE logouuid = @logoUuid',
+        substitutionValues: {
           'logoUuid': logoUuid,
           'status': EmailStatus.read.index,
           'readOn': DateTime.now(),
@@ -207,7 +197,7 @@ class PostgresStrategy implements PersistanceDelegate {
   @override
   Future<List<Email>> fetchEmailsInQueue() async {
     try {
-      final query = await connection.execute(
+      final query = await connection.query(
         'SELECT * FROM emailqueue WHERE sentat IS NULL',
       );
 
@@ -236,8 +226,8 @@ class PostgresStrategy implements PersistanceDelegate {
   Future<void> deleteEmailsInQueue(int id) async {
     try {
       await connection.execute(
-        Sql.named('DELETE FROM emailqueue WHERE id = @id'),
-        parameters: {
+        'DELETE FROM emailqueue WHERE id = @id',
+        substitutionValues: {
           'id': id,
         },
       );
@@ -250,15 +240,13 @@ class PostgresStrategy implements PersistanceDelegate {
   @override
   Future<List<Email>> fetchEmailsInDateRange(DateTime datetime) async {
     try {
-      final query = await connection.execute(
-        Sql.named(
-          '''
-              SELECT * FROM emailsent 
-              WHERE sentat <= @datetime 
-              AND status != @readStatus
-              ''',
-        ),
-        parameters: {
+      final query = await connection.query(
+        '''
+      SELECT * FROM emailsent 
+      WHERE sentat <= @datetime 
+      AND status != @readStatus
+      ''',
+        substitutionValues: {
           'datetime': datetime,
           'readStatus': EmailStatus.read.index,
         },
@@ -288,13 +276,11 @@ class PostgresStrategy implements PersistanceDelegate {
   @override
   Future<List<Email>> fetchEmailsWithFollowUp() async {
     try {
-      final query = await connection.execute(
-        Sql.named(
-          '''
-              SELECT * FROM emailsent 
-                WHERE followupat IS NOT NULL
-              ''',
-        ),
+      final query = await connection.query(
+        '''
+      SELECT * FROM emailsent 
+      WHERE followupat IS NOT NULL
+      ''',
       );
 
       final results = query.map(
