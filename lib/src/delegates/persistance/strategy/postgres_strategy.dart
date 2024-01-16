@@ -29,7 +29,6 @@ class PostgresStrategy implements PersistanceDelegate {
 
     /// Enable or Disable the SSL mode to used for the connection
     bool sslMode = false,
-
   })  : _host = host,
         _databaseName = databaseName,
         _userName = userName,
@@ -60,6 +59,16 @@ class PostgresStrategy implements PersistanceDelegate {
   ///
   /// [schema] : The name of the schema where the tables should be created.
   Future<void> initialFixture(String schema) async {
+    connection = PostgreSQLConnection(
+      _host,
+      _port,
+      _databaseName,
+      username: _userName,
+      password: _dbPassword,
+      useSSL: _sslMode,
+    );
+    await connection.open();
+    
     await connection.execute('''
       CREATE TABLE IF NOT EXISTS $schema.EmailQueue (
       id SERIAL PRIMARY KEY,
